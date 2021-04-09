@@ -1,19 +1,21 @@
-package template.extensions
+package com.javasurvival.extensions
 
+import com.javasurvival.config.BotConfig
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.commands.converters.defaultingCoalescedString
 import com.kotlindiscord.kord.extensions.commands.converters.defaultingString
 import com.kotlindiscord.kord.extensions.commands.converters.user
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
-import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.KoinExtension
 import com.kotlindiscord.kord.extensions.utils.respond
 import com.kotlindiscord.kord.extensions.utils.startsWithVowel
 import dev.kord.common.annotation.KordPreview
-import template.TEST_SERVER_ID
+import org.koin.core.component.inject
 
 @OptIn(KordPreview::class)
-class TestExtension(bot: ExtensibleBot) : Extension(bot) {
+class TestExtension(bot: ExtensibleBot) : KoinExtension(bot) {
     override val name = "test"
+    private val config: BotConfig by inject()
 
     override suspend fun setup() {
         command(::SlapArgs) {
@@ -32,7 +34,7 @@ class TestExtension(bot: ExtensibleBot) : Extension(bot) {
                     }
 
                     // Use "a" or "an" as appropriate for English
-                    val indefiniteArticle = if (weapon!!.startsWithVowel()) {
+                    val indefiniteArticle = if (weapon.startsWithVowel()) {
                         "an"
                     } else {
                         "a"
@@ -46,15 +48,14 @@ class TestExtension(bot: ExtensibleBot) : Extension(bot) {
         slashCommand(::SlapSlashArgs) {
             name = "slap"
             description = "Ask the bot to slap another user"
-            showSource = true
 
-            guild(TEST_SERVER_ID)  // Otherwise it'll take an hour to update
+            guild(config.botGuild)  // Otherwise it'll take an hour to update
 
             action {
                 with(arguments) {
                     // Don't slap ourselves on request, slap the requester!
                     val realTarget = if (target.id == bot.kord.selfId) {
-                        member
+                        user
                     } else {
                         target
                     }

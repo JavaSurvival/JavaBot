@@ -10,7 +10,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.15.0"
 }
 
-group = "template"
+group = "com.javasurvival"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -26,7 +26,9 @@ repositories {
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
 
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.0-RC7")
+    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.0-20210407.223410-91")
+
+    implementation("com.kotlindiscord.kordex.ext.common:ext-common:1.0.0-SNAPSHOT")
 
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("io.github.microutils:kotlin-logging:2.0.3")
@@ -34,6 +36,11 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+
+
+    implementation("com.uchuhimo:konf:0.23.0")
+    implementation("com.uchuhimo:konf-toml:0.23.0")
 }
 
 application {
