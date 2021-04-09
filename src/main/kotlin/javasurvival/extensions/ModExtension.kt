@@ -61,11 +61,7 @@ class ModExtension(bot: ExtensibleBot) : KoinExtension(bot) {
                 publicFollowUp {
                     embed {
                         title = ":alarm_clock: $limit second slowmode enabled for $duration minute${
-                            if (duration > 1) {
-                                "s"
-                            } else {
-                                ""
-                            }
+                            if (duration > 1) "s" else ""
                         }"
                     }
                 }
@@ -112,11 +108,7 @@ class ModExtension(bot: ExtensibleBot) : KoinExtension(bot) {
                 publicFollowUp {
                     embed {
                         title = ":lock: Channel locked for $duration minute${
-                            if (duration > 1) {
-                                "s"
-                            } else {
-                                ""
-                            }
+                            if (duration > 1) "s" else ""
                         }"
                     }
                 }
