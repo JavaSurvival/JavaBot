@@ -10,7 +10,7 @@ plugins {
     id("io.gitlab.arturbosch.detekt") version "1.15.0"
 }
 
-group = "com.javasurvival"
+group = "javasurvival"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -26,7 +26,7 @@ repositories {
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
 
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.0-20210407.223410-91")
+    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.0-SNAPSHOT")
 
     implementation("com.kotlindiscord.kordex.ext.common:ext-common:1.0.0-SNAPSHOT")
 
@@ -45,7 +45,7 @@ dependencies {
 
 application {
     // This is deprecated, but the Shadow plugin requires it
-    mainClassName = "template.AppKt"
+    mainClassName = "javasurvival.AppKt"
 }
 
 gitHooks {
@@ -66,7 +66,7 @@ tasks.withType<KotlinCompile> {
 tasks.jar {
     manifest {
         attributes(
-            "Main-Class" to "template.AppKt"
+            "Main-Class" to "javasurvival.AppKt"
         )
     }
 }

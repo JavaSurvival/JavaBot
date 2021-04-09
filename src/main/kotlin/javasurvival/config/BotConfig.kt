@@ -1,8 +1,5 @@
-package com.javasurvival.config
+package javasurvival.config
 
-import com.javasurvival.config.spec.BotSpec
-import com.javasurvival.config.spec.ChannelsSpec
-import com.javasurvival.config.spec.RolesSpec
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kordex.ext.common.configuration.base.TomlConfig
 import dev.kord.common.entity.Snowflake
@@ -10,6 +7,9 @@ import dev.kord.core.behavior.getChannelOf
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Role
 import dev.kord.core.entity.channel.GuildMessageChannel
+import javasurvival.config.spec.BotSpec
+import javasurvival.config.spec.ChannelsSpec
+import javasurvival.config.spec.RolesSpec
 
 class BotConfig : TomlConfig(
     baseName = "main",

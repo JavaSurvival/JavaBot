@@ -1,4 +1,4 @@
-package com.javasurvival.utility
+package javasurvival.utility
 
 import dev.kord.common.Color
 

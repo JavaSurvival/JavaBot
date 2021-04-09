@@ -1,20 +1,20 @@
-package com.javasurvival.extensions
+package javasurvival.extensions
 
-import com.javasurvival.config.BotConfig
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.checks.topRoleHigherOrEqual
 import com.kotlindiscord.kord.extensions.commands.converters.defaultingInt
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
+import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
 import com.kotlindiscord.kord.extensions.extensions.KoinExtension
 import com.kotlindiscord.kord.extensions.utils.Scheduler
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
-import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.behavior.channel.edit
 import dev.kord.core.entity.PermissionOverwrite
 import dev.kord.core.entity.channel.GuildChannel
 import dev.kord.core.entity.channel.TextChannel
+import javasurvival.config.BotConfig
 import org.koin.core.component.inject
 import java.util.*
 import kotlin.time.DurationUnit
@@ -39,15 +39,16 @@ class ModExtension(bot: ExtensibleBot) : KoinExtension(bot) {
 
     @ExperimentalTime
     override suspend fun setup() {
-        slashCommand(::SlowmodeArgs) {
+        slashCommand(ModExtension::SlowmodeArgs) {
             name = "slowmode"
             description = "Enables slowmode on a channel for a period of time"
 
             guild(config.botGuild)
             check(topRoleHigherOrEqual(config.rolesMod))
+            autoAck = AutoAckType.PUBLIC
 
             action {
-                if (channel !is TextChannel) followUp("failed")
+                if (channel !is TextChannel) ephemeralFollowUp("failed")
                 val channel = channel as TextChannel
 
                 val limit = arguments.limit.coerceIn(MIN_LENGTH..MAX_LIMIT)
@@ -57,14 +58,16 @@ class ModExtension(bot: ExtensibleBot) : KoinExtension(bot) {
                     rateLimitPerUser = limit
                 }
 
-                channel.createEmbed {
-                    title = ":alarm_clock: $limit second slowmode enabled for $duration minute${
-                        if (duration > 1) {
-                            "s"
-                        } else {
-                            ""
-                        }
-                    }"
+                publicFollowUp {
+                    embed {
+                        title = ":alarm_clock: $limit second slowmode enabled for $duration minute${
+                            if (duration > 1) {
+                                "s"
+                            } else {
+                                ""
+                            }
+                        }"
+                    }
                 }
 
                 channelJobs[channel.id]?.let { scheduler.cancelJob(it) }
@@ -81,15 +84,16 @@ class ModExtension(bot: ExtensibleBot) : KoinExtension(bot) {
             }
         }
 
-        slashCommand(::LockArgs) {
+        slashCommand(ModExtension::LockArgs) {
             name = "lock"
             description = "Locks a channel for a period of time"
 
             guild(config.botGuild)
             check(topRoleHigherOrEqual(config.rolesMod))
+            autoAck = AutoAckType.PUBLIC
 
             action {
-                if (channel !is TextChannel) followUp("failed")
+                if (channel !is TextChannel) ephemeralFollowUp("failed")
 
                 val channel = channel.asChannel() as GuildChannel
                 val duration = arguments.duration.coerceIn(MIN_LENGTH..MAX_DURATION)
@@ -105,14 +109,16 @@ class ModExtension(bot: ExtensibleBot) : KoinExtension(bot) {
 
                 channel.addOverwrite(permsObj)
 
-                this.channel.createEmbed {
-                    title = ":lock: Channel locked for $duration minute${
-                        if (duration > 1) {
-                            "s"
-                        } else {
-                            ""
-                        }
-                    }"
+                publicFollowUp {
+                    embed {
+                        title = ":lock: Channel locked for $duration minute${
+                            if (duration > 1) {
+                                "s"
+                            } else {
+                                ""
+                            }
+                        }"
+                    }
                 }
 
                 channelJobs[this.channel.id]?.let { scheduler.cancelJob(it) }

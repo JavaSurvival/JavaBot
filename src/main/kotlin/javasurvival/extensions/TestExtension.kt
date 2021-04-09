@@ -1,6 +1,5 @@
-package com.javasurvival.extensions
+package javasurvival.extensions
 
-import com.javasurvival.config.BotConfig
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.commands.converters.defaultingCoalescedString
 import com.kotlindiscord.kord.extensions.commands.converters.defaultingString
@@ -10,6 +9,7 @@ import com.kotlindiscord.kord.extensions.extensions.KoinExtension
 import com.kotlindiscord.kord.extensions.utils.respond
 import com.kotlindiscord.kord.extensions.utils.startsWithVowel
 import dev.kord.common.annotation.KordPreview
+import javasurvival.config.BotConfig
 import org.koin.core.component.inject
 
 @OptIn(KordPreview::class)
@@ -18,7 +18,7 @@ class TestExtension(bot: ExtensibleBot) : KoinExtension(bot) {
     private val config: BotConfig by inject()
 
     override suspend fun setup() {
-        command(::SlapArgs) {
+        command(TestExtension::SlapArgs) {
             name = "slap"
             description = "Ask the bot to slap another user"
 
@@ -37,7 +37,7 @@ class TestExtension(bot: ExtensibleBot) : KoinExtension(bot) {
                     val indefiniteArticle = if (weapon.startsWithVowel()) {
                         "an"
                     } else {
-                        "a"
+                        "javasurvival"
                     }
 
                     message.respond("*slaps ${realTarget.mention} with $indefiniteArticle $weapon*")
@@ -45,7 +45,7 @@ class TestExtension(bot: ExtensibleBot) : KoinExtension(bot) {
             }
         }
 
-        slashCommand(::SlapSlashArgs) {
+        slashCommand(TestExtension::SlapSlashArgs) {
             name = "slap"
             description = "Ask the bot to slap another user"
 
@@ -64,10 +64,10 @@ class TestExtension(bot: ExtensibleBot) : KoinExtension(bot) {
                     val indefiniteArticle = if (weapon.startsWithVowel()) {
                         "an"
                     } else {
-                        "a"
+                        "javasurvival"
                     }
 
-                    followUp("*slaps ${realTarget.mention} with $indefiniteArticle $weapon*")
+                    ephemeralFollowUp("*slaps ${realTarget.mention} with $indefiniteArticle $weapon*")
                 }
             }
         }

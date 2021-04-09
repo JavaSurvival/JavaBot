@@ -1,11 +1,11 @@
-package com.javasurvival.extensions
+package javasurvival.extensions
 
-import com.javasurvival.config.BotConfig
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
 import com.kotlindiscord.kord.extensions.commands.slash.SlashCommand
 import com.kotlindiscord.kord.extensions.extensions.KoinExtension
 import dev.kord.common.entity.Snowflake
+import javasurvival.config.BotConfig
 import org.koin.core.component.inject
 
 class PronounExtension(bot: ExtensibleBot) : KoinExtension(bot) {
@@ -38,6 +38,7 @@ class PronounExtension(bot: ExtensibleBot) : KoinExtension(bot) {
                 }
 
                 member.addRole(prefPronoun.getRole(config), "Pronoun change")
+                ephemeralFollowUp("Pronouns set")
             }
         }
     }

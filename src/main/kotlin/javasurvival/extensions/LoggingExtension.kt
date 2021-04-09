@@ -1,7 +1,5 @@
-package com.javasurvival.extensions
+package javasurvival.extensions
 
-import com.javasurvival.config.BotConfig
-import com.javasurvival.utility.Colors
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.extensions.KoinExtension
 import com.kotlindiscord.kord.extensions.utils.getUrl
@@ -12,6 +10,8 @@ import dev.kord.core.entity.Attachment
 import dev.kord.core.event.message.MessageDeleteEvent
 import dev.kord.core.event.message.MessageUpdateEvent
 import dev.kord.rest.builder.message.EmbedBuilder
+import javasurvival.config.BotConfig
+import javasurvival.utility.Colors
 import org.koin.core.component.inject
 
 private const val MAX_MSG_LENGTH = 500

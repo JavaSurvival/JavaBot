@@ -1,4 +1,4 @@
-package com.javasurvival.config.spec
+package javasurvival.config.spec
 
 import com.uchuhimo.konf.ConfigSpec
 
