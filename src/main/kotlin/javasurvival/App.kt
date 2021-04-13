@@ -7,10 +7,7 @@ import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.checks.inGuild
 import com.kotlindiscord.kord.extensions.utils.module
 import javasurvival.config.BotConfig
-import javasurvival.extensions.LoggingExtension
-import javasurvival.extensions.ModExtension
-import javasurvival.extensions.PronounExtension
-import javasurvival.extensions.UserExtension
+import javasurvival.extensions.*
 import org.koin.dsl.bind
 
 suspend fun main() {
@@ -35,6 +32,7 @@ suspend fun main() {
             add(::UserExtension)
             add(::ModExtension)
             add(::PronounExtension)
+            add(::ReactionRoleExtension)
         }
 
         hooks {

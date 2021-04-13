@@ -12,3 +12,12 @@ he_they = 830099911625801798
 she_her = 830099939903275020
 she_they = 830099985486839868
 they_them = 830100026495336478
+announcements = 831641701881217024
+events = 831641733846401034
+
+[messages]
+reaction = 458130425567641612
+
+[emoji]
+event = "🥳"
+announcement = "📣"

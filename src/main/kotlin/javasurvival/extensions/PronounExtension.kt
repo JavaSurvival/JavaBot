@@ -12,12 +12,12 @@ import org.koin.core.component.inject
 
 @OptIn(KordPreview::class)
 class PronounExtension(bot: ExtensibleBot) : KoinExtension(bot) {
-    override val name: String = "pronouns"
+    override val name: String = "pronoun"
     val config: BotConfig by inject()
 
     override suspend fun setup() {
         slashCommand(::PronounArgs) {
-            name = "pronoun"
+            name = "pronouns"
             description = "Set your preferred pronouns"
 
             guild(config.botGuild)

@@ -7,13 +7,11 @@ import dev.kord.core.behavior.getChannelOf
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Role
 import dev.kord.core.entity.channel.GuildMessageChannel
-import javasurvival.config.spec.BotSpec
-import javasurvival.config.spec.ChannelsSpec
-import javasurvival.config.spec.RolesSpec
+import javasurvival.config.spec.*
 
 class BotConfig : TomlConfig(
     baseName = "main",
-    specs = arrayOf(BotSpec, ChannelsSpec, RolesSpec),
+    specs = arrayOf(BotSpec, ChannelsSpec, RolesSpec, MessagesSpec, EmojiSpec),
     resourcePrefix = "bot",
     configFolder = "bot"
 ) {
@@ -33,6 +31,13 @@ class BotConfig : TomlConfig(
     val rolesSheHer: Snowflake get() = Snowflake(config[RolesSpec.sheHer])
     val rolesSheThey: Snowflake get() = Snowflake(config[RolesSpec.sheThey])
     val rolesTheyThem: Snowflake get() = Snowflake(config[RolesSpec.theyThem])
+    val rolesAnnouncements: Snowflake get() = Snowflake(config[RolesSpec.announcements])
+    val rolesEvents: Snowflake get() = Snowflake(config[RolesSpec.events])
+
+    val reactionMessage: Snowflake get() = Snowflake(config[MessagesSpec.reaction])
+
+    val emojiEvent: String get() = config[EmojiSpec.event]
+    val emojiAnnouncement: String get() = config[EmojiSpec.announcement]
 
     suspend fun getGuild(bot: ExtensibleBot): Guild? = bot.kord.getGuild(botGuild)
 
