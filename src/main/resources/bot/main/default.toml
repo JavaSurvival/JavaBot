@@ -19,5 +19,5 @@ events = 831641733846401034
 reaction = 458130425567641612
 
 [emoji]
-event = "🥳"
-announcement = "📣"
+event = "\uD83E\uDD73"
+announcement = "\uD83D\uDCE3"

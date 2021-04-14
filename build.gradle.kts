@@ -21,6 +21,9 @@ repositories {
         name = "Kotlin Discord"
         url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
     }
+
+    maven(url = "https://dl.bintray.com/kordlib/Kord")
+
 }
 
 dependencies {
@@ -29,6 +32,8 @@ dependencies {
     implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.0-SNAPSHOT")
 
     implementation("com.kotlindiscord.kordex.ext.common:ext-common:1.0.0-SNAPSHOT")
+
+    implementation("com.gitlab.kordlib:kordx.emoji:0.4.0")
 
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("io.github.microutils:kotlin-logging:2.0.3")

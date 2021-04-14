@@ -1,5 +1,7 @@
 package javasurvival.config
 
+import com.gitlab.kordlib.kordx.emoji.DiscordEmoji
+import com.gitlab.kordlib.kordx.emoji.Emojis
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kordex.ext.common.configuration.base.TomlConfig
 import dev.kord.common.entity.Snowflake
@@ -36,8 +38,8 @@ class BotConfig : TomlConfig(
 
     val reactionMessage: Snowflake get() = Snowflake(config[MessagesSpec.reaction])
 
-    val emojiEvent: String get() = config[EmojiSpec.event]
-    val emojiAnnouncement: String get() = config[EmojiSpec.announcement]
+    val emojiEvent: DiscordEmoji get() = Emojis[config[EmojiSpec.event]]!!
+    val emojiAnnouncement: DiscordEmoji get() =  Emojis[config[EmojiSpec.announcement]]!!
 
     suspend fun getGuild(bot: ExtensibleBot): Guild? = bot.kord.getGuild(botGuild)
 

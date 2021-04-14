@@ -21,10 +21,10 @@ class ReactionRoleExtension(bot: ExtensibleBot) : KoinExtension(bot) {
                 val member = event.user.asMember(event.guildId!!)
 
                 val emojiName = event.emoji.name
-                if (emojiName == config.emojiAnnouncement) {
+                if (emojiName == config.emojiAnnouncement.unicode) {
                     member.addRole(config.rolesAnnouncements)
                     member.dm("Announcement role added")
-                } else if (emojiName == config.emojiEvent) {
+                } else if (emojiName == config.emojiEvent.unicode) {
                     member.addRole(config.rolesEvents)
                     member.dm("Event role added")
                 }
@@ -39,10 +39,10 @@ class ReactionRoleExtension(bot: ExtensibleBot) : KoinExtension(bot) {
                 val member = event.user.asMember(event.guildId!!)
 
                 val emojiName = event.emoji.name
-                if (emojiName == config.emojiAnnouncement) {
+                if (emojiName == config.emojiAnnouncement.unicode) {
                     member.removeRole(config.rolesAnnouncements)
                     member.dm("Announcement role removed")
-                } else if (emojiName == config.emojiEvent) {
+                } else if (emojiName == config.emojiEvent.unicode) {
                     member.removeRole(config.rolesEvents)
                     member.dm("Event role removed")
                 }
