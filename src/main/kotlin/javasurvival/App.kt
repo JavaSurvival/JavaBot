@@ -5,7 +5,7 @@ package javasurvival
 
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.checks.inGuild
-import com.kotlindiscord.kord.extensions.utils.module
+import com.kotlindiscord.kord.extensions.utils.loadModule
 import javasurvival.config.BotConfig
 import javasurvival.extensions.*
 import org.koin.dsl.bind
@@ -14,12 +14,6 @@ suspend fun main() {
     val config = BotConfig()
 
     val bot = ExtensibleBot(config.botToken) {
-        messageCommands {
-            check(inGuild(config.botGuild))
-
-            defaultPrefix = "?"
-        }
-
         slashCommands {
             check(inGuild(config.botGuild))
 
@@ -36,8 +30,8 @@ suspend fun main() {
         }
 
         hooks {
-            afterKoinCreated {
-                koin.module {
+            afterKoinSetup {
+                loadModule {
                     single { config } bind BotConfig::class
                 }
             }

@@ -1,17 +1,16 @@
 package javasurvival.extensions
 
-import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
 import com.kotlindiscord.kord.extensions.commands.slash.converters.ChoiceEnum
 import com.kotlindiscord.kord.extensions.commands.slash.converters.enumChoice
-import com.kotlindiscord.kord.extensions.extensions.KoinExtension
+import com.kotlindiscord.kord.extensions.extensions.Extension
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Snowflake
 import javasurvival.config.BotConfig
 import org.koin.core.component.inject
 
 @OptIn(KordPreview::class)
-class PronounExtension(bot: ExtensibleBot) : KoinExtension(bot) {
+class PronounExtension : Extension() {
     override val name: String = "pronoun"
     val config: BotConfig by inject()
 
@@ -59,6 +58,10 @@ class PronounExtension(bot: ExtensibleBot) : KoinExtension(bot) {
         THEY_THEM {
             override val readableName: String = "they_them"
             override fun getRole(config: BotConfig) = config.rolesTheyThem
+        },
+        IT_THEY {
+            override val readableName: String = "it_they"
+            override fun getRole(config: BotConfig) = config.rolesItThey
         };
 
         abstract fun getRole(config: BotConfig): Snowflake

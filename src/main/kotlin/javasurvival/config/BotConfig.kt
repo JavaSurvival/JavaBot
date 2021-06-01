@@ -33,13 +33,16 @@ class BotConfig : TomlConfig(
     val rolesSheHer: Snowflake get() = Snowflake(config[RolesSpec.sheHer])
     val rolesSheThey: Snowflake get() = Snowflake(config[RolesSpec.sheThey])
     val rolesTheyThem: Snowflake get() = Snowflake(config[RolesSpec.theyThem])
+    val rolesItThey: Snowflake get() = Snowflake(config[RolesSpec.itThey])
     val rolesAnnouncements: Snowflake get() = Snowflake(config[RolesSpec.announcements])
     val rolesEvents: Snowflake get() = Snowflake(config[RolesSpec.events])
+    val rolesMinecraft: Snowflake get() = Snowflake(config[RolesSpec.minecraft])
 
     val reactionMessage: Snowflake get() = Snowflake(config[MessagesSpec.reaction])
 
     val emojiEvent: DiscordEmoji get() = Emojis[config[EmojiSpec.event]]!!
-    val emojiAnnouncement: DiscordEmoji get() =  Emojis[config[EmojiSpec.announcement]]!!
+    val emojiAnnouncement: DiscordEmoji get() = Emojis[config[EmojiSpec.announcement]]!!
+    val emojiMinecraft: String get() = config[EmojiSpec.minecraft]
 
     suspend fun getGuild(bot: ExtensibleBot): Guild? = bot.kord.getGuild(botGuild)
 

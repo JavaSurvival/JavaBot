@@ -9,6 +9,8 @@ object RolesSpec : ConfigSpec() {
     val sheHer by required<Long>()
     val sheThey by required<Long>()
     val theyThem by required<Long>()
+    val itThey by required<Long>()
     val announcements by required<Long>()
     val events by required<Long>()
+    val minecraft by required<Long>()
 }

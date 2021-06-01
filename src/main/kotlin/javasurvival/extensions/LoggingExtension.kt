@@ -1,7 +1,6 @@
 package javasurvival.extensions
 
-import com.kotlindiscord.kord.extensions.ExtensibleBot
-import com.kotlindiscord.kord.extensions.extensions.KoinExtension
+import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.utils.getUrl
 import dev.kord.common.Color
 import dev.kord.core.behavior.channel.createEmbed
@@ -16,7 +15,7 @@ import org.koin.core.component.inject
 
 private const val MAX_MSG_LENGTH = 500
 
-class LoggingExtension(bot: ExtensibleBot) : KoinExtension(bot) {
+class LoggingExtension : Extension() {
     override val name: String = "logging"
     private val config: BotConfig by inject()
 

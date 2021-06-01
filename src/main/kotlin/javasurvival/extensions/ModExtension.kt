@@ -1,11 +1,10 @@
 package javasurvival.extensions
 
-import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.checks.topRoleHigherOrEqual
 import com.kotlindiscord.kord.extensions.commands.converters.defaultingInt
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
 import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
-import com.kotlindiscord.kord.extensions.extensions.KoinExtension
+import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.utils.Scheduler
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Permission
@@ -30,13 +29,14 @@ private const val DEFAULT_SLOWMODE_DUR = 5
 
 private const val DEFAULT_LOCK_DUR = 20
 
-class ModExtension(bot: ExtensibleBot) : KoinExtension(bot) {
+class ModExtension : Extension() {
     override val name: String = "mod"
     private val config: BotConfig by inject()
     private val scheduler = Scheduler()
 
     private val channelJobs = mutableMapOf<Snowflake, UUID>()
 
+    @OptIn(KordPreview::class)
     @ExperimentalTime
     override suspend fun setup() {
         slashCommand(ModExtension::SlowmodeArgs) {
