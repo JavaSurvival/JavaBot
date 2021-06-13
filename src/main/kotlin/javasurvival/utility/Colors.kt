@@ -6,4 +6,5 @@ import dev.kord.common.Color
 object Colors {
     val red = Color(0xDA7272)
     val orange = Color(0xed9812)
+    val green =  Color(0x5ac477)
 }

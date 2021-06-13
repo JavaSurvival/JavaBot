@@ -1,6 +1,6 @@
 package javasurvival.extensions
 
-import com.kotlindiscord.kord.extensions.commands.converters.channel
+import com.kotlindiscord.kord.extensions.commands.converters.impl.channel
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
 import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
 import com.kotlindiscord.kord.extensions.extensions.Extension
@@ -8,6 +8,7 @@ import dev.kord.common.annotation.KordPreview
 import javasurvival.config.BotConfig
 import org.koin.core.component.inject
 
+@OptIn(KordPreview::class)
 class UserExtension : Extension() {
     override val name: String = "user"
     val config: BotConfig by inject()
@@ -29,7 +30,6 @@ class UserExtension : Extension() {
     }
 
     class GotoArguments : Arguments() {
-        @OptIn(KordPreview::class)
         val channel by channel("channel", "Channel to go to")
     }
 }

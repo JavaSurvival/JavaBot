@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     application
 
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.5.10"
 
     id("com.github.jakemarsden.git-hooks") version "0.0.1"
     id("com.github.johnrengelman.shadow") version "5.2.0"
@@ -29,8 +29,7 @@ repositories {
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
 
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.0-SNAPSHOT")
-
+    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.1-20210613.173344-25")
     implementation("com.kotlindiscord.kordex.ext.common:ext-common:1.0.0-SNAPSHOT")
 
     implementation("com.gitlab.kordlib:kordx.emoji:0.4.0")

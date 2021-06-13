@@ -1,7 +1,7 @@
 package javasurvival.extensions
 
 import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.utils.getUrl
+import com.kotlindiscord.kord.extensions.utils.getJumpUrl
 import dev.kord.common.Color
 import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.behavior.channel.createMessage
@@ -51,7 +51,7 @@ class LoggingExtension : Extension() {
 
                 logAction(
                     "Message Edited",
-                    "[Message](${old.getUrl()})" +
+                    "[Message](${old.getJumpUrl()})" +
                             " send by ${author.mention} edited in ${event.channel.mention}",
                     author.avatar.url,
                     Colors.orange,
@@ -97,7 +97,7 @@ class LoggingExtension : Extension() {
         if (attachments.isNotEmpty()) {
             channel.createMessage {
                 for (attachment in attachments) {
-                    content = (content ?: "") + attachment.url
+                    content = (content ?: "") + attachment.data
                 }
             }
         }

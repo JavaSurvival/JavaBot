@@ -1,11 +1,12 @@
 package javasurvival.extensions
 
 import com.kotlindiscord.kord.extensions.checks.topRoleHigherOrEqual
-import com.kotlindiscord.kord.extensions.commands.converters.defaultingInt
+import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingInt
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
 import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
 import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.utils.Scheduler
+import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
+import com.kotlindiscord.kord.extensions.utils.scheduling.Task
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
@@ -14,8 +15,8 @@ import dev.kord.core.entity.PermissionOverwrite
 import dev.kord.core.entity.channel.GuildChannel
 import dev.kord.core.entity.channel.TextChannel
 import javasurvival.config.BotConfig
+import javasurvival.utility.Colors
 import org.koin.core.component.inject
-import java.util.*
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.toDuration
@@ -34,7 +35,7 @@ class ModExtension : Extension() {
     private val config: BotConfig by inject()
     private val scheduler = Scheduler()
 
-    private val channelJobs = mutableMapOf<Snowflake, UUID>()
+    private val channelJobs = mutableMapOf<Snowflake, Task>()
 
     @OptIn(KordPreview::class)
     @ExperimentalTime
@@ -66,10 +67,9 @@ class ModExtension : Extension() {
                     }
                 }
 
-                channelJobs[channel.id]?.let { scheduler.cancelJob(it) }
+                channelJobs[channel.id]?.cancel()
                 channelJobs[channel.id] = scheduler.schedule(
-                    duration.toDuration(DurationUnit.MINUTES).inMilliseconds.toLong(),
-                    null
+                    duration.toDuration(DurationUnit.MINUTES).toLong(DurationUnit.SECONDS)
                 ) {
                     channel.edit {
                         rateLimitPerUser = 0
@@ -110,13 +110,13 @@ class ModExtension : Extension() {
                         title = ":lock: Channel locked for $duration minute${
                             if (duration > 1) "s" else ""
                         }"
+                        color = Colors.red
                     }
                 }
 
-                channelJobs[this.channel.id]?.let { scheduler.cancelJob(it) }
+                channelJobs[this.channel.id]?.cancel()
                 channelJobs[this.channel.id] = scheduler.schedule(
-                    duration.toDuration(DurationUnit.MINUTES).inMilliseconds.toLong(),
-                    null
+                    duration.toDuration(DurationUnit.MINUTES).toLong(DurationUnit.SECONDS)
                 ) {
                     channel.addOverwrite(
                         PermissionOverwrite.forEveryone(
@@ -125,6 +125,13 @@ class ModExtension : Extension() {
                             perms.denied - Permission.SendMessages - Permission.AddReactions
                         )
                     )
+
+                    publicFollowUp {
+                        embed {
+                            title = ":unlock: Channel unlocked"
+                            color = Colors.green
+                        }
+                    }
 
                     channelJobs.remove(this.channel.id)
                 }
