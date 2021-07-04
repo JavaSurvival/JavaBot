@@ -16,7 +16,7 @@ appender("CONSOLE", ConsoleAppender) {
         pattern = "%d{yyyy-MM-dd HH:mm:ss:SSS Z} | %5level | %40.40logger{40} | %msg%n"
     }
 
-    target = ConsoleTarget.SystemErr
+    target = ConsoleTarget.SystemOut
 }
 
 root(defaultLevel, ["CONSOLE"])

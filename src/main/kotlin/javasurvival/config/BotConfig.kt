@@ -5,6 +5,7 @@ import com.gitlab.kordlib.kordx.emoji.Emojis
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kordex.ext.common.configuration.base.TomlConfig
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
 import dev.kord.core.behavior.getChannelOf
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Role
@@ -26,8 +27,10 @@ class BotConfig : TomlConfig(
 
     val channelLogs: Snowflake get() = Snowflake(config[ChannelsSpec.logs])
     val channelModLogs: Snowflake get() = Snowflake(config[ChannelsSpec.modLogs])
+    val channelSuggestions: Snowflake get() = Snowflake(config[ChannelsSpec.suggestions])
 
     val rolesMod: Snowflake get() = Snowflake(config[RolesSpec.mod])
+    val rolesAdmin: Snowflake get() = Snowflake(config[RolesSpec.admin])
     val rolesHeHim: Snowflake get() = Snowflake(config[RolesSpec.heHim])
     val rolesHeThey: Snowflake get() = Snowflake(config[RolesSpec.heThey])
     val rolesSheHer: Snowflake get() = Snowflake(config[RolesSpec.sheHer])
@@ -44,7 +47,7 @@ class BotConfig : TomlConfig(
     val emojiAnnouncement: DiscordEmoji get() = Emojis[config[EmojiSpec.announcement]]!!
     val emojiMinecraft: String get() = config[EmojiSpec.minecraft]
 
-    suspend fun getGuild(bot: ExtensibleBot): Guild? = bot.kord.getGuild(botGuild)
+    suspend fun getGuild(bot: ExtensibleBot): Guild? = bot.getKoin().get<Kord>().getGuild(botGuild)
 
     suspend fun getLogsChannel(bot: ExtensibleBot): GuildMessageChannel? =
         getGuild(bot)?.getChannelOf(channelLogs)

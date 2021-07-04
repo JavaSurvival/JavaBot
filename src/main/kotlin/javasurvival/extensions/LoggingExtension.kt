@@ -1,5 +1,7 @@
 package javasurvival.extensions
 
+import com.kotlindiscord.kord.extensions.DISCORD_RED
+import com.kotlindiscord.kord.extensions.DISCORD_YELLOW
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.utils.getJumpUrl
 import dev.kord.common.Color
@@ -10,7 +12,6 @@ import dev.kord.core.event.message.MessageDeleteEvent
 import dev.kord.core.event.message.MessageUpdateEvent
 import dev.kord.rest.builder.message.EmbedBuilder
 import javasurvival.config.BotConfig
-import javasurvival.utility.Colors
 import org.koin.core.component.inject
 
 private const val MAX_MSG_LENGTH = 500
@@ -30,7 +31,7 @@ class LoggingExtension : Extension() {
                     "Message Deleted",
                     "Message send by ${author.mention} deleted in ${message.channel.mention}",
                     author.avatar.url,
-                    Colors.red,
+                    DISCORD_RED,
                     {
                         name = "Message"
                         if (message.content.isNotEmpty()) {
@@ -54,7 +55,7 @@ class LoggingExtension : Extension() {
                     "[Message](${old.getJumpUrl()})" +
                             " send by ${author.mention} edited in ${event.channel.mention}",
                     author.avatar.url,
-                    Colors.orange,
+                    DISCORD_YELLOW,
                     {
                         name = "Before"
                         if (old.content.isNotEmpty()) {
@@ -97,7 +98,7 @@ class LoggingExtension : Extension() {
         if (attachments.isNotEmpty()) {
             channel.createMessage {
                 for (attachment in attachments) {
-                    content = (content ?: "") + attachment.data
+                    content = (content ?: "") + attachment.data.url
                 }
             }
         }

@@ -4,6 +4,7 @@ import com.uchuhimo.konf.ConfigSpec
 
 object RolesSpec : ConfigSpec() {
     val mod by required<Long>()
+    val admin by required<Long>()
     val heHim by required<Long>()
     val heThey by required<Long>()
     val sheHer by required<Long>()

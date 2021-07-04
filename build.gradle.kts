@@ -4,14 +4,16 @@ plugins {
     application
 
     kotlin("jvm") version "1.5.10"
+    kotlin("plugin.serialization")
 
     id("com.github.jakemarsden.git-hooks") version "0.0.1"
     id("com.github.johnrengelman.shadow") version "5.2.0"
     id("io.gitlab.arturbosch.detekt") version "1.15.0"
+    id("com.google.devtools.ksp") version "1.5.10-1.0.0-beta02"
 }
 
 group = "javasurvival"
-version = "1.0-SNAPSHOT"
+version = "1.1-SNAPSHOT"
 
 repositories {
     // You can remove this if you're not testing locally-installed KordEx builds
@@ -29,19 +31,21 @@ repositories {
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
 
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.1-20210613.173344-25")
+    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.1-SNAPSHOT")
     implementation("com.kotlindiscord.kordex.ext.common:ext-common:1.0.0-SNAPSHOT")
+    ksp("com.kotlindiscord.kord.extensions:annotation-processor:1.4.1-SNAPSHOT")
+    compileOnly("com.kotlindiscord.kord.extensions:annotations:1.4.1-SNAPSHOT")
 
     implementation("com.gitlab.kordlib:kordx.emoji:0.4.0")
 
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("io.github.microutils:kotlin-logging:2.0.3")
-    implementation("org.codehaus.groovy:groovy:3.0.4")
+    implementation("org.codehaus.groovy:groovy:3.0.8")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.1")
 
     implementation("com.uchuhimo:konf:0.23.0")
     implementation("com.uchuhimo:konf-toml:0.23.0")
@@ -77,8 +81,8 @@ tasks.jar {
 
 java {
     // Current LTS version of Java
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_16
+    targetCompatibility = JavaVersion.VERSION_16
 }
 
 detekt {

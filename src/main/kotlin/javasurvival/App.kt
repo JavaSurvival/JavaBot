@@ -8,6 +8,9 @@ import com.kotlindiscord.kord.extensions.checks.inGuild
 import com.kotlindiscord.kord.extensions.utils.loadModule
 import javasurvival.config.BotConfig
 import javasurvival.extensions.*
+import javasurvival.extensions.suggestions.JsonSuggestions
+import javasurvival.extensions.suggestions.SuggestionsData
+import javasurvival.extensions.suggestions.SuggestionsExtension
 import org.koin.dsl.bind
 
 suspend fun main() {
@@ -21,18 +24,22 @@ suspend fun main() {
         }
 
         extensions {
-            // add(::TestExtension)
             add(::LoggingExtension)
             add(::UserExtension)
             add(::ModExtension)
             add(::PronounExtension)
             add(::ReactionRoleExtension)
+            add(::SuggestionsExtension)
         }
 
         hooks {
             afterKoinSetup {
+                val suggestions = JsonSuggestions()
+                suggestions.load()
+
                 loadModule {
                     single { config } bind BotConfig::class
+                    single { suggestions } bind SuggestionsData::class
                 }
             }
         }

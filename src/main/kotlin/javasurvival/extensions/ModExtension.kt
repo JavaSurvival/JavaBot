@@ -1,5 +1,7 @@
 package javasurvival.extensions
 
+import com.kotlindiscord.kord.extensions.DISCORD_GREEN
+import com.kotlindiscord.kord.extensions.DISCORD_RED
 import com.kotlindiscord.kord.extensions.checks.topRoleHigherOrEqual
 import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingInt
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
@@ -14,8 +16,8 @@ import dev.kord.core.behavior.channel.edit
 import dev.kord.core.entity.PermissionOverwrite
 import dev.kord.core.entity.channel.GuildChannel
 import dev.kord.core.entity.channel.TextChannel
+import dev.kord.rest.builder.interaction.embed
 import javasurvival.config.BotConfig
-import javasurvival.utility.Colors
 import org.koin.core.component.inject
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
@@ -46,10 +48,10 @@ class ModExtension : Extension() {
 
             guild(config.botGuild)
             check(topRoleHigherOrEqual(config.rolesMod))
+            check { it.interaction.channel is TextChannel }
             autoAck = AutoAckType.PUBLIC
 
             action {
-                if (channel !is TextChannel) ephemeralFollowUp("failed")
                 val channel = channel as TextChannel
 
                 val limit = arguments.limit.coerceIn(MIN_LENGTH..MAX_LIMIT)
@@ -86,11 +88,11 @@ class ModExtension : Extension() {
 
             guild(config.botGuild)
             check(topRoleHigherOrEqual(config.rolesMod))
+            check { it.interaction.channel is TextChannel }
+
             autoAck = AutoAckType.PUBLIC
 
             action {
-                if (channel !is TextChannel) ephemeralFollowUp("failed")
-
                 val channel = channel.asChannel() as GuildChannel
                 val duration = arguments.duration.coerceIn(MIN_LENGTH..MAX_DURATION)
 
@@ -110,7 +112,7 @@ class ModExtension : Extension() {
                         title = ":lock: Channel locked for $duration minute${
                             if (duration > 1) "s" else ""
                         }"
-                        color = Colors.red
+                        color = DISCORD_RED
                     }
                 }
 
@@ -129,7 +131,7 @@ class ModExtension : Extension() {
                     publicFollowUp {
                         embed {
                             title = ":unlock: Channel unlocked"
-                            color = Colors.green
+                            color = DISCORD_GREEN
                         }
                     }
 

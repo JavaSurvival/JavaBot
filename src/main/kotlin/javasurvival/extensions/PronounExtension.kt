@@ -1,17 +1,13 @@
 package javasurvival.extensions
 
 import com.kotlindiscord.kord.extensions.commands.slash.converters.ChoiceEnum
+import com.kotlindiscord.kord.extensions.components.Components
 import com.kotlindiscord.kord.extensions.extensions.Extension
-import com.kotlindiscord.kord.extensions.utils.hasRole
 import dev.kord.common.annotation.KordPreview
-import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Member
-import dev.kord.rest.builder.component.ActionRowBuilder
 import javasurvival.config.BotConfig
 import org.koin.core.component.inject
-
-private const val ROW_SIZE = 5
 
 @OptIn(KordPreview::class)
 class PronounExtension : Extension() {
@@ -28,13 +24,12 @@ class PronounExtension : Extension() {
             action {
                 val member = this.member!!
 
-                ephemeralFollowUp("Select Pronouns") {
-                    val pronounRows = Pronoun.values().asList().chunked(ROW_SIZE)
-                    for (row in pronounRows) {
-                        actionRow {
-                            for (pronoun in row) {
-                                buildButton(member.asMember(), pronoun, this)
-                            }
+                ephemeralFollowUp {
+                    content = "Select Pronouns"
+
+                    components {
+                        for (pronoun in Pronoun.values()) {
+                            buildButton(member.asMember(), pronoun, this)
                         }
                     }
                 }
@@ -42,18 +37,18 @@ class PronounExtension : Extension() {
         }
     }
 
-    private suspend fun buildButton(member: Member, pronoun: Pronoun, actionRowBuilder: ActionRowBuilder) {
-        actionRowBuilder.button(ButtonStyle.Primary) {
+    private suspend fun buildButton(member: Member, pronoun: Pronoun, components: Components) {
+        components.interactiveButton {
             label = pronoun.readableName
-
-            if (member.hasRole(member.guild.getRole(pronoun.getRole(config)))) disabled = true
 
             action {
                 for (possiblePronoun in Pronoun.values()) {
                     member.removeRole(possiblePronoun.getRole(config), "Pronoun change")
                 }
                 member.addRole(pronoun.getRole(config), "Pronoun change")
-                ephemeralFollowUp("Pronouns set")
+                ephemeralFollowUp {
+                    content = "Pronouns Updated"
+                }
             }
         }
     }
