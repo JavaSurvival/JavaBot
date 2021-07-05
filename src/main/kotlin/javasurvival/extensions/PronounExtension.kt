@@ -1,11 +1,10 @@
 package javasurvival.extensions
 
 import com.kotlindiscord.kord.extensions.commands.slash.converters.ChoiceEnum
-import com.kotlindiscord.kord.extensions.components.Components
+import com.kotlindiscord.kord.extensions.components.builders.MenuBuilder
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Snowflake
-import dev.kord.core.entity.Member
 import javasurvival.config.BotConfig
 import org.koin.core.component.inject
 
@@ -28,8 +27,23 @@ class PronounExtension : Extension() {
                     content = "Select Pronouns"
 
                     components {
-                        for (pronoun in Pronoun.values()) {
-                            buildButton(member.asMember(), pronoun, this)
+                        menu {
+                            maximumChoices = 1
+                            for (pronoun in Pronoun.values()) {
+                                pronounOption(pronoun)
+                            }
+                            action {
+                                val selectedPronoun = Pronoun.valueOf(selected.first())
+
+                                for (possiblePronoun in Pronoun.values()) {
+                                    member.removeRole(possiblePronoun.getRole(config), "Pronoun change")
+                                }
+
+                                member.addRole(selectedPronoun.getRole(config), "Pronoun change")
+                                ephemeralFollowUp {
+                                    content = "Pronouns set to ${selectedPronoun.readableName}"
+                                }
+                            }
                         }
                     }
                 }
@@ -37,20 +51,8 @@ class PronounExtension : Extension() {
         }
     }
 
-    private suspend fun buildButton(member: Member, pronoun: Pronoun, components: Components) {
-        components.interactiveButton {
-            label = pronoun.readableName
-
-            action {
-                for (possiblePronoun in Pronoun.values()) {
-                    member.removeRole(possiblePronoun.getRole(config), "Pronoun change")
-                }
-                member.addRole(pronoun.getRole(config), "Pronoun change")
-                ephemeralFollowUp {
-                    content = "Pronouns Updated"
-                }
-            }
-        }
+    private suspend fun MenuBuilder.pronounOption(pronoun: Pronoun) {
+        this.option(pronoun.readableName, pronoun.name)
     }
 
     enum class Pronoun : ChoiceEnum {
