@@ -13,8 +13,8 @@ class ReactionRoleExtension : Extension() {
 
     override suspend fun setup() {
         event<ReactionAddEvent> {
-            check { it.guild != null }
-            check { it.messageId == config.reactionMessage }
+            check { failIfNot(this.event.guild != null) }
+            check { failIfNot(this.event.messageId == config.reactionMessage) }
 
             action {
                 val member = event.user.asMember(event.guildId!!)
@@ -37,8 +37,8 @@ class ReactionRoleExtension : Extension() {
         }
 
         event<ReactionRemoveEvent> {
-            check { it.guild != null }
-            check { it.messageId == config.reactionMessage }
+            check { failIfNot(this.event.guild != null) }
+            check { failIfNot(this.event.messageId == config.reactionMessage) }
 
             action {
                 val member = event.user.asMember(event.guildId!!)

@@ -5,7 +5,7 @@
 package javasurvival.extensions.suggestions
 
 import com.kotlindiscord.kord.extensions.CommandException
-import com.kotlindiscord.kord.extensions.checks.isNotBot
+import com.kotlindiscord.kord.extensions.checks.isNotbot
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescedString
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalCoalescingString
 import com.kotlindiscord.kord.extensions.commands.parser.Arguments
@@ -25,14 +25,15 @@ import dev.kord.core.behavior.reply
 import dev.kord.core.builder.components.emoji
 import dev.kord.core.entity.Message
 import dev.kord.core.entity.ReactionEmoji
-import dev.kord.core.entity.channel.GuildMessageChannel
-import dev.kord.core.entity.interaction.ComponentInteraction
+import dev.kord.core.entity.channel.TextChannel
+import dev.kord.core.entity.interaction.ButtonInteraction
 import dev.kord.core.event.interaction.InteractionCreateEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.event.message.MessageDeleteEvent
 import dev.kord.rest.builder.message.MessageCreateBuilder
 import dev.kord.rest.builder.message.MessageModifyBuilder
 import javasurvival.config.BotConfig
+import kotlinx.coroutines.flow.firstOrNull
 import org.koin.core.component.inject
 import kotlin.time.ExperimentalTime
 
@@ -58,10 +59,10 @@ class SuggestionsExtension : Extension() {
 
     override suspend fun setup() {
         event<MessageCreateEvent> {
-            check(::isNotBot)
-            check { it.message.channelId == config.channelSuggestions }
-            check { it.message.content.trim().isNotEmpty() }
-            check { it.message.interaction == null }
+            check(isNotbot)
+            check { failIfNot(event.message.channelId == config.channelSuggestions) }
+            check { failIfNot(event.message.content.trim().isNotEmpty()) }
+            check { failIfNot(event.message.interaction == null) }
 
             action {
                 val id = event.message.id.asString
@@ -111,12 +112,12 @@ class SuggestionsExtension : Extension() {
         }
 
         event<MessageDeleteEvent> {
-            check(::isNotBot)
-            check { it.message?.author != null }
-            check { it.message?.webhookId == null }
-            check { it.message?.channelId == config.channelSuggestions }
-            check { it.message?.content?.trim()?.isNotEmpty() == true }
-            check { it.message?.interaction == null }
+            check(isNotbot)
+            check { failIfNot(event.message?.author != null) }
+            check { failIfNot(event.message?.webhookId == null) }
+            check { failIfNot(event.message?.channelId == config.channelSuggestions) }
+            check { failIfNot(event.message?.content?.trim()?.isNotEmpty() == true) }
+            check { failIfNot(event.message?.interaction == null) }
 
             action {
                 messageCache.add(event.message!!.content to event.message!!.author!!.id)
@@ -128,11 +129,11 @@ class SuggestionsExtension : Extension() {
         }
 
         event<InteractionCreateEvent> {
-            check { it.interaction.channelId == config.channelSuggestions }
-            check { it.interaction is ComponentInteraction }
+            check { failIfNot(event.interaction.channelId == config.channelSuggestions) }
+            check { failIfNot(event.interaction is ButtonInteraction) }
 
             action {
-                val interaction = event.interaction as ComponentInteraction
+                val interaction = event.interaction as ButtonInteraction
 
                 if ("/" !in interaction.componentId) {
                     return@action
@@ -268,16 +269,20 @@ class SuggestionsExtension : Extension() {
 
         if (suggestion.message == null) {
             suggestion.message = channel.createMessage { suggestion(suggestion) }.id
+            channel.startPublicThreadWithMessage(suggestion.message!!, suggestion.id)
 
             suggestions.save(suggestion)
         } else {
             val message = channel.getMessage(suggestion.message!!)
+            channel.activeThreads.firstOrNull { it.name == suggestion.id }?.createMessage {
+                content = "Suggestion Updated"
+            }
 
             message.edit { suggestion(suggestion, message) }
         }
     }
 
-    suspend fun getChannel() = kord.getChannelOf<GuildMessageChannel>(config.channelSuggestions)!!
+    suspend fun getChannel() = kord.getChannelOf<TextChannel>(config.channelSuggestions)!!
 
     fun MessageCreateBuilder.suggestion(suggestion: Suggestion) {
         val id = suggestion.id

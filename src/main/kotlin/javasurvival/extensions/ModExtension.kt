@@ -48,7 +48,7 @@ class ModExtension : Extension() {
 
             guild(config.botGuild)
             check(topRoleHigherOrEqual(config.rolesMod))
-            check { it.interaction.channel is TextChannel }
+            check { failIfNot(this.event.interaction.channel is TextChannel) }
             autoAck = AutoAckType.PUBLIC
 
             action {
@@ -88,7 +88,7 @@ class ModExtension : Extension() {
 
             guild(config.botGuild)
             check(topRoleHigherOrEqual(config.rolesMod))
-            check { it.interaction.channel is TextChannel }
+            check { failIfNot(this.event.interaction.channel is TextChannel) }
 
             autoAck = AutoAckType.PUBLIC
 
