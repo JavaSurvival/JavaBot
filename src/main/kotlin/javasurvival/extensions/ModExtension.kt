@@ -14,9 +14,9 @@ import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.edit
 import dev.kord.core.entity.PermissionOverwrite
-import dev.kord.core.entity.channel.GuildChannel
 import dev.kord.core.entity.channel.TextChannel
-import dev.kord.rest.builder.interaction.embed
+import dev.kord.core.entity.channel.TopGuildChannel
+import dev.kord.rest.builder.message.create.embed
 import javasurvival.config.BotConfig
 import org.koin.core.component.inject
 import kotlin.time.DurationUnit
@@ -48,7 +48,7 @@ class ModExtension : Extension() {
 
             guild(config.botGuild)
             check(topRoleHigherOrEqual(config.rolesMod))
-            check { failIfNot(this.event.interaction.channel is TextChannel) }
+            check { failIfNot(this.event.interaction.channel.asChannel() is TextChannel) }
             autoAck = AutoAckType.PUBLIC
 
             action {
@@ -88,12 +88,12 @@ class ModExtension : Extension() {
 
             guild(config.botGuild)
             check(topRoleHigherOrEqual(config.rolesMod))
-            check { failIfNot(this.event.interaction.channel is TextChannel) }
+            check { failIfNot(this.event.interaction.channel.asChannel() is TopGuildChannel) }
 
             autoAck = AutoAckType.PUBLIC
 
             action {
-                val channel = channel.asChannel() as GuildChannel
+                val channel = channel.asChannel() as TopGuildChannel
                 val duration = arguments.duration.coerceIn(MIN_LENGTH..MAX_DURATION)
 
                 val perms = channel.getPermissionOverwritesForRole(channel.guildId)
@@ -105,7 +105,7 @@ class ModExtension : Extension() {
                     perms.denied + Permission.SendMessages + Permission.AddReactions
                 )
 
-                channel.addOverwrite(permsObj)
+                channel.addOverwrite(permsObj, "Channel locked")
 
                 publicFollowUp {
                     embed {
@@ -125,7 +125,8 @@ class ModExtension : Extension() {
                             channel.guildId,
                             perms.allowed,
                             perms.denied - Permission.SendMessages - Permission.AddReactions
-                        )
+                        ),
+                        "Channel unlocked"
                     )
 
                     publicFollowUp {

@@ -30,6 +30,7 @@ suspend fun main() {
             add(::PronounExtension)
             add(::ReactionRoleExtension)
             add(::SuggestionsExtension)
+            add(::AutoThreadExtension)
         }
 
         hooks {

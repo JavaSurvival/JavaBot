@@ -30,8 +30,12 @@ import dev.kord.core.entity.interaction.ButtonInteraction
 import dev.kord.core.event.interaction.InteractionCreateEvent
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.core.event.message.MessageDeleteEvent
-import dev.kord.rest.builder.message.MessageCreateBuilder
-import dev.kord.rest.builder.message.MessageModifyBuilder
+import dev.kord.rest.builder.message.create.MessageCreateBuilder
+import dev.kord.rest.builder.message.create.actionRow
+import dev.kord.rest.builder.message.create.embed
+import dev.kord.rest.builder.message.modify.MessageModifyBuilder
+import dev.kord.rest.builder.message.modify.actionRow
+import dev.kord.rest.builder.message.modify.embed
 import javasurvival.config.BotConfig
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.core.component.inject
@@ -56,6 +60,8 @@ class SuggestionsExtension : Extension() {
     private val config: BotConfig by inject()
     private val suggestions: SuggestionsData by inject()
     private val messageCache: MutableList<Pair<String, Snowflake>> = mutableListOf()
+
+    suspend fun suggestionChannel() = kord.getChannelOf<TextChannel>(config.channelSuggestions)!!
 
     override suspend fun setup() {
         event<MessageCreateEvent> {
@@ -234,6 +240,9 @@ class SuggestionsExtension : Extension() {
 
                 suggestions.save(arguments.suggestion)
                 sendSuggestion(arguments.suggestion.id)
+                suggestionChannel().activeThreads.firstOrNull { it.name == arguments.suggestion.id }?.createMessage {
+                    content = "Suggestion Updated"
+                }
 
                 ephemeralFollowUp {
                     content = "Suggestion updated."
@@ -255,6 +264,9 @@ class SuggestionsExtension : Extension() {
 
                 suggestions.save(arguments.suggestion)
                 sendSuggestion(arguments.suggestion.id)
+                suggestionChannel().activeThreads.firstOrNull { it.name == arguments.suggestion.id }?.createMessage {
+                    content = "Suggestion Updated"
+                }
 
                 ephemeralFollowUp {
                     content = "Suggestion updated."
@@ -265,24 +277,21 @@ class SuggestionsExtension : Extension() {
 
     suspend fun sendSuggestion(id: String) {
         val suggestion = suggestions.get(id) ?: return
-        val channel = getChannel()
+        val channel = suggestionChannel()
 
         if (suggestion.message == null) {
             suggestion.message = channel.createMessage { suggestion(suggestion) }.id
-            channel.startPublicThreadWithMessage(suggestion.message!!, suggestion.id)
+            val thread = channel.startPublicThreadWithMessage(suggestion.message!!, suggestion.id)
+            thread.addUser(Snowflake(suggestion.owner))
+            thread.leave()
 
             suggestions.save(suggestion)
         } else {
             val message = channel.getMessage(suggestion.message!!)
-            channel.activeThreads.firstOrNull { it.name == suggestion.id }?.createMessage {
-                content = "Suggestion Updated"
-            }
 
             message.edit { suggestion(suggestion, message) }
         }
     }
-
-    suspend fun getChannel() = kord.getChannelOf<TextChannel>(config.channelSuggestions)!!
 
     fun MessageCreateBuilder.suggestion(suggestion: Suggestion) {
         val id = suggestion.id

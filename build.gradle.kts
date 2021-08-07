@@ -31,10 +31,10 @@ repositories {
 dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
 
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.4-SNAPSHOT")
+    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.4-RC2")
     implementation("com.kotlindiscord.kordex.ext.common:ext-common:1.0.0-SNAPSHOT")
-    ksp("com.kotlindiscord.kord.extensions:annotation-processor:1.4.4-SNAPSHOT")
-    compileOnly("com.kotlindiscord.kord.extensions:annotations:1.4.4-SNAPSHOT")
+    ksp("com.kotlindiscord.kord.extensions:annotation-processor:1.4.4-RC2")
+    compileOnly("com.kotlindiscord.kord.extensions:annotations:1.4.4-RC2")
 
     implementation("com.gitlab.kordlib:kordx.emoji:0.4.0")
 
