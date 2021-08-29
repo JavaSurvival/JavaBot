@@ -3,14 +3,15 @@ package javasurvival.extensions
 import com.kotlindiscord.kord.extensions.DISCORD_RED
 import com.kotlindiscord.kord.extensions.DISCORD_YELLOW
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.utils.download
 import com.kotlindiscord.kord.extensions.utils.getJumpUrl
 import dev.kord.common.Color
-import dev.kord.core.behavior.channel.createEmbed
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.entity.Attachment
 import dev.kord.core.event.message.MessageDeleteEvent
 import dev.kord.core.event.message.MessageUpdateEvent
 import dev.kord.rest.builder.message.EmbedBuilder
+import dev.kord.rest.builder.message.create.embed
 import javasurvival.config.BotConfig
 import org.koin.core.component.inject
 
@@ -83,22 +84,21 @@ class LoggingExtension : Extension() {
     ) {
         val channel = config.getLogsChannel(bot)!!
 
-        channel.createEmbed {
-            this.title = title
-            this.description = description
-            this.thumbnail {
-                url = iconUrl
+        channel.createMessage {
+            embed {
+                this.title = title
+                this.description = description
+                this.thumbnail {
+                    url = iconUrl
+                }
+                for (field in fields) {
+                    this.fields.add(EmbedBuilder.Field().apply(field))
+                }
+                this.color = color
             }
-            for (field in fields) {
-                this.fields.add(EmbedBuilder.Field().apply(field))
-            }
-            this.color = color
-        }
-
-        if (attachments.isNotEmpty()) {
-            channel.createMessage {
+            if (attachments.isNotEmpty()) {
                 for (attachment in attachments) {
-                    content = (content ?: "") + attachment.data.url
+                    addFile(attachment.filename, attachment.download().inputStream())
                 }
             }
         }
