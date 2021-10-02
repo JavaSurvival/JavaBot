@@ -29,7 +29,7 @@ class BotConfig : TomlConfig(
     val channelModLogs: Snowflake get() = Snowflake(config[ChannelsSpec.modLogs])
     val channelSuggestions: Snowflake get() = Snowflake(config[ChannelsSpec.suggestions])
     val channelIssues: Snowflake get() = Snowflake(config[ChannelsSpec.issues])
-    val channelScreenshots: Snowflake get() = Snowflake(config[ChannelsSpec.screenshots])
+    val channelScreenshots: List<Snowflake> get() = config[ChannelsSpec.screenshots].map { Snowflake(it) }
 
     val rolesMod: Snowflake get() = Snowflake(config[RolesSpec.mod])
     val rolesAdmin: Snowflake get() = Snowflake(config[RolesSpec.admin])

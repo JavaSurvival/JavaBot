@@ -96,10 +96,9 @@ class LoggingExtension : Extension() {
                 }
                 this.color = color
             }
-            if (attachments.isNotEmpty()) {
-                for (attachment in attachments) {
-                    addFile(attachment.filename, attachment.download().inputStream())
-                }
+
+            for (attachment in attachments) {
+                addFile(attachment.filename, attachment.download().inputStream())
             }
         }
     }

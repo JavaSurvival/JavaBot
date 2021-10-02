@@ -10,7 +10,7 @@ class AutoThreadExtension : Extension() {
     override val name = "auto-thread"
 
     private val config: BotConfig by inject()
-    val threadChannels = setOf(config.channelIssues, config.channelScreenshots)
+    private val threadChannels = config.channelScreenshots.toMutableSet().apply { this.add(config.channelIssues) }
 
     override suspend fun setup() {
         event<MessageCreateEvent> {
@@ -20,7 +20,7 @@ class AutoThreadExtension : Extension() {
 
             action {
                 if (
-                    event.message.channelId == config.channelScreenshots &&
+                    config.channelScreenshots.contains(event.message.channelId) &&
                     event.message.embeds.isEmpty() &&
                     event.message.attachments.isEmpty()
                 ) {
