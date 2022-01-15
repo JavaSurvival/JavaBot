@@ -1,6 +1,6 @@
 package javasurvival.extensions.suggestions
 
-import com.kotlindiscord.kord.extensions.commands.slash.converters.ChoiceEnum
+import com.kotlindiscord.kord.extensions.commands.application.slash.converters.ChoiceEnum
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -1,35 +1,34 @@
 package javasurvival.extensions
 
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.dm
 import dev.kord.core.event.message.ReactionAddEvent
 import dev.kord.core.event.message.ReactionRemoveEvent
-import javasurvival.config.BotConfig
-import org.koin.core.component.inject
+import javasurvival.*
 
 class ReactionRoleExtension : Extension() {
     override val name = "reactionroles"
-    private val config: BotConfig by inject()
 
     override suspend fun setup() {
         event<ReactionAddEvent> {
             check { failIfNot(this.event.guild != null) }
-            check { failIfNot(this.event.messageId == config.reactionMessage) }
+            check { failIfNot(this.event.messageId == REACTION_MESSAGE) }
 
             action {
                 val member = event.user.asMember(event.guildId!!)
 
                 when (event.emoji.name) {
-                    config.emojiAnnouncement.unicode -> {
-                        member.addRole(config.rolesAnnouncements)
+                    ANNOUNCEMENT_EMOJI.unicode -> {
+                        member.addRole(ANNOUNCEMENT_ROLE)
                         member.dm("Announcement role added")
                     }
-                    config.emojiEvent.unicode -> {
-                        member.addRole(config.rolesEvents)
+                    EVENT_EMOJI.unicode -> {
+                        member.addRole(EVENT_ROLE)
                         member.dm("Event role added")
                     }
-                    config.emojiMinecraft -> {
-                        member.addRole(config.rolesMinecraft)
+                    MINECRAFT_EMOJI -> {
+                        member.addRole(MINECRAFT_ROLE)
                         member.dm("Minecraft News role added")
                     }
                 }
@@ -38,22 +37,22 @@ class ReactionRoleExtension : Extension() {
 
         event<ReactionRemoveEvent> {
             check { failIfNot(this.event.guild != null) }
-            check { failIfNot(this.event.messageId == config.reactionMessage) }
+            check { failIfNot(this.event.messageId == REACTION_MESSAGE) }
 
             action {
                 val member = event.user.asMember(event.guildId!!)
 
                 when (event.emoji.name) {
-                    config.emojiAnnouncement.unicode -> {
-                        member.removeRole(config.rolesAnnouncements)
+                    ANNOUNCEMENT_EMOJI.unicode -> {
+                        member.removeRole(ANNOUNCEMENT_ROLE)
                         member.dm("Announcement role removed")
                     }
-                    config.emojiEvent.unicode -> {
-                        member.removeRole(config.rolesEvents)
+                    EVENT_EMOJI.unicode -> {
+                        member.removeRole(EVENT_ROLE)
                         member.dm("Event role removed")
                     }
-                    config.emojiMinecraft -> {
-                        member.removeRole(config.rolesMinecraft)
+                    MINECRAFT_EMOJI -> {
+                        member.removeRole(MINECRAFT_ROLE)
                         member.dm("Minecraft News role removed")
                     }
                 }

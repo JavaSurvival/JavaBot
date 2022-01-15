@@ -1,6 +1,6 @@
 package javasurvival.extensions.suggestions
 
-import com.kotlindiscord.kord.extensions.utils.env
+import com.kotlindiscord.kord.extensions.utils.envOrNull
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -11,7 +11,7 @@ import kotlin.io.path.*
 class JsonSuggestions : SuggestionsData {
     private val json = Json
 
-    private val root = (env("DATA_ROOT") ?: "/data") + "/suggestions"
+    private val root = (envOrNull("DATA_ROOT") ?: "data") + "/suggestions"
     private val path = "$root/{id}.json"
 
     private val suggestionCache: MutableMap<String, Suggestion> = mutableMapOf()
@@ -48,7 +48,7 @@ class JsonSuggestions : SuggestionsData {
             suggestionCache.clear()
         }
 
-        val rootPath = Path.of(root)
+        val rootPath = Path(root)
 
         if (!rootPath.exists()) {
             rootPath.createDirectories()

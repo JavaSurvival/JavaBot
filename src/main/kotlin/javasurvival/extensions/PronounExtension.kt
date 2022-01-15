@@ -1,33 +1,35 @@
 package javasurvival.extensions
 
-import com.kotlindiscord.kord.extensions.commands.slash.converters.ChoiceEnum
-import com.kotlindiscord.kord.extensions.components.builders.MenuBuilder
+import com.kotlindiscord.kord.extensions.commands.application.slash.converters.ChoiceEnum
+import com.kotlindiscord.kord.extensions.components.components
+import com.kotlindiscord.kord.extensions.components.ephemeralSelectMenu
+import com.kotlindiscord.kord.extensions.components.menus.EphemeralSelectMenu
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
+import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Snowflake
-import javasurvival.config.BotConfig
-import org.koin.core.component.inject
+import javasurvival.*
+import kotlin.time.ExperimentalTime
 
 @OptIn(KordPreview::class)
 class PronounExtension : Extension() {
     override val name: String = "pronoun"
-    val config: BotConfig by inject()
 
+    @OptIn(ExperimentalTime::class)
     override suspend fun setup() {
-        slashCommand {
+        ephemeralSlashCommand {
             name = "pronouns"
             description = "Set your preferred pronouns"
-
-            guild(config.botGuild)
 
             action {
                 val member = this.member!!
 
-                ephemeralFollowUp {
+                respond {
                     content = "Select Pronouns"
 
                     components {
-                        menu {
+                        ephemeralSelectMenu {
                             maximumChoices = 1
                             for (pronoun in Pronoun.values()) {
                                 pronounOption(pronoun)
@@ -36,11 +38,11 @@ class PronounExtension : Extension() {
                                 val selectedPronoun = Pronoun.valueOf(selected.first())
 
                                 for (possiblePronoun in Pronoun.values()) {
-                                    member.removeRole(possiblePronoun.getRole(config), "Pronoun change")
+                                    member.removeRole(possiblePronoun.role, "Pronoun change")
                                 }
 
-                                member.addRole(selectedPronoun.getRole(config), "Pronoun change")
-                                ephemeralFollowUp {
+                                member.addRole(selectedPronoun.role, "Pronoun change")
+                                respond {
                                     content = "Pronouns set to ${selectedPronoun.readableName}"
                                 }
                             }
@@ -51,36 +53,36 @@ class PronounExtension : Extension() {
         }
     }
 
-    private suspend fun MenuBuilder.pronounOption(pronoun: Pronoun) {
+    private suspend fun EphemeralSelectMenu.pronounOption(pronoun: Pronoun) {
         this.option(pronoun.readableName, pronoun.name)
     }
 
     enum class Pronoun : ChoiceEnum {
         HE_HIM {
-            override val readableName: String = "He/Him"
-            override fun getRole(config: BotConfig) = config.rolesHeHim
+            override val readableName = "He/Him"
+            override val role = HEHIM_ROLE
         },
         HE_THEY {
-            override val readableName: String = "He/They"
-            override fun getRole(config: BotConfig) = config.rolesHeThey
+            override val readableName = "He/They"
+            override val role = HETHEY_ROLE
         },
         SHE_HER {
-            override val readableName: String = "She/Her"
-            override fun getRole(config: BotConfig) = config.rolesSheHer
+            override val readableName = "She/Her"
+            override val role = SHEHER_ROLE
         },
         SHE_THEY {
-            override val readableName: String = "She/They"
-            override fun getRole(config: BotConfig) = config.rolesSheThey
+            override val readableName = "She/They"
+            override val role = SHEYTHEY_ROLE
         },
         THEY_THEM {
-            override val readableName: String = "They/Them"
-            override fun getRole(config: BotConfig) = config.rolesTheyThem
+            override val readableName = "They/Them"
+            override val role = THEYTHEM_ROLE
         },
         IT_THEY {
-            override val readableName: String = "It/They"
-            override fun getRole(config: BotConfig) = config.rolesItThey
+            override val readableName = "It/They"
+            override val role = ITTHEY_ROLE
         };
 
-        abstract fun getRole(config: BotConfig): Snowflake
+        abstract val role: Snowflake
     }
 }

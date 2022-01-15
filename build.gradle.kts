@@ -3,13 +3,13 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     application
 
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm")
     kotlin("plugin.serialization")
 
-    id("com.github.jakemarsden.git-hooks") version "0.0.1"
-    id("com.github.johnrengelman.shadow") version "5.2.0"
-    id("io.gitlab.arturbosch.detekt") version "1.15.0"
-    id("com.google.devtools.ksp") version "1.5.10-1.0.0-beta02"
+    id("com.github.jakemarsden.git-hooks")
+    id("com.github.johnrengelman.shadow")
+    id("io.gitlab.arturbosch.detekt")
+    id("com.google.devtools.ksp")
 }
 
 group = "javasurvival"
@@ -23,32 +23,26 @@ repositories {
         name = "Kotlin Discord"
         url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
     }
-
-    maven(url = "https://dl.bintray.com/kordlib/Kord")
-
 }
 
 dependencies {
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0")
+    detektPlugins(libs.detekt)
 
-    implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.4.4-RC2")
-    implementation("com.kotlindiscord.kordex.ext.common:ext-common:1.0.0-SNAPSHOT")
-    ksp("com.kotlindiscord.kord.extensions:annotation-processor:1.4.4-RC2")
-    compileOnly("com.kotlindiscord.kord.extensions:annotations:1.4.4-RC2")
+    ksp(libs.kordex.annotationProcessor)
 
-    implementation("com.gitlab.kordlib:kordx.emoji:0.4.0")
+    implementation(libs.kordex.annotations)
+    implementation(libs.kordex.core)
 
-    implementation("ch.qos.logback:logback-classic:1.2.3")
-    implementation("io.github.microutils:kotlin-logging:2.0.3")
-    implementation("org.codehaus.groovy:groovy:3.0.8")
+    implementation(libs.jansi)
+    implementation(libs.logback)
+    implementation(libs.logging)
+    implementation(libs.groovy)
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.2.1")
+    implementation(platform(libs.kotlin.bom))
+    implementation(libs.kotlin.stdlib)
+    implementation(libs.kx.ser)
 
-    implementation("com.uchuhimo:konf:0.23.0")
-    implementation("com.uchuhimo:konf-toml:0.23.0")
+    implementation(libs.kordx.emoji)
 }
 
 application {
@@ -65,10 +59,9 @@ gitHooks {
 // If you don't want the import, remove it and use org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 tasks.withType<KotlinCompile> {
     // Current LTS version of Java
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "16"
 
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
-    kotlinOptions.useIR = true
 }
 
 tasks.jar {
@@ -88,4 +81,18 @@ java {
 detekt {
     buildUponDefaultConfig = true
     config = rootProject.files("detekt.yml")
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir(file("$buildDir/generated/ksp/main/kotlin/"))
+        }
+    }
+
+    test {
+        java {
+            srcDir(file("$buildDir/generated/ksp/test/kotlin/"))
+        }
+    }
 }

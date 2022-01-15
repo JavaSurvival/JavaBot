@@ -1,12 +1,15 @@
+@file:Suppress("ArgumentListWrapping") // idk whats wrong
+
 package javasurvival.extensions
 
 import com.kotlindiscord.kord.extensions.DISCORD_GREEN
 import com.kotlindiscord.kord.extensions.DISCORD_RED
 import com.kotlindiscord.kord.extensions.checks.topRoleHigherOrEqual
+import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingInt
-import com.kotlindiscord.kord.extensions.commands.parser.Arguments
-import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import com.kotlindiscord.kord.extensions.utils.scheduling.Task
 import dev.kord.common.annotation.KordPreview
@@ -17,8 +20,7 @@ import dev.kord.core.entity.PermissionOverwrite
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.entity.channel.TopGuildChannel
 import dev.kord.rest.builder.message.create.embed
-import javasurvival.config.BotConfig
-import org.koin.core.component.inject
+import javasurvival.MOD_ROLE
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.toDuration
@@ -34,7 +36,6 @@ private const val DEFAULT_LOCK_DUR = 20
 
 class ModExtension : Extension() {
     override val name: String = "mod"
-    private val config: BotConfig by inject()
     private val scheduler = Scheduler()
 
     private val channelJobs = mutableMapOf<Snowflake, Task>()
@@ -42,14 +43,12 @@ class ModExtension : Extension() {
     @OptIn(KordPreview::class)
     @ExperimentalTime
     override suspend fun setup() {
-        slashCommand(ModExtension::SlowmodeArgs) {
+        publicSlashCommand(::SlowmodeArgs) {
             name = "slowmode"
             description = "Enables slowmode on a channel for a period of time"
 
-            guild(config.botGuild)
-            check(topRoleHigherOrEqual(config.rolesMod))
+            check { topRoleHigherOrEqual(MOD_ROLE) }
             check { failIfNot(this.event.interaction.channel.asChannel() is TextChannel) }
-            autoAck = AutoAckType.PUBLIC
 
             action {
                 val channel = channel as TextChannel
@@ -61,7 +60,7 @@ class ModExtension : Extension() {
                     rateLimitPerUser = limit
                 }
 
-                publicFollowUp {
+                respond {
                     embed {
                         title = ":alarm_clock: $limit second slowmode enabled for $duration minute${
                             if (duration > 1) "s" else ""
@@ -82,22 +81,20 @@ class ModExtension : Extension() {
             }
         }
 
-        slashCommand(ModExtension::LockArgs) {
+        publicSlashCommand(::LockArgs) {
             name = "lock"
             description = "Locks a channel for a period of time"
 
-            guild(config.botGuild)
-            check(topRoleHigherOrEqual(config.rolesMod))
+            check { topRoleHigherOrEqual(MOD_ROLE) }
             check { failIfNot(this.event.interaction.channel.asChannel() is TopGuildChannel) }
-
-            autoAck = AutoAckType.PUBLIC
 
             action {
                 val channel = channel.asChannel() as TopGuildChannel
                 val duration = arguments.duration.coerceIn(MIN_LENGTH..MAX_DURATION)
 
-                val perms = channel.getPermissionOverwritesForRole(channel.guildId)
-                    ?: PermissionOverwrite.forEveryone(channel.guildId)
+                val perms = channel.getPermissionOverwritesForRole(channel.guildId) ?: PermissionOverwrite.forEveryone(
+                    channel.guildId
+                )
 
                 val permsObj = PermissionOverwrite.forEveryone(
                     channel.guildId,
@@ -107,7 +104,7 @@ class ModExtension : Extension() {
 
                 channel.addOverwrite(permsObj, "Channel locked")
 
-                publicFollowUp {
+                respond {
                     embed {
                         title = ":lock: Channel locked for $duration minute${
                             if (duration > 1) "s" else ""
@@ -125,11 +122,10 @@ class ModExtension : Extension() {
                             channel.guildId,
                             perms.allowed,
                             perms.denied - Permission.SendMessages - Permission.AddReactions
-                        ),
-                        "Channel unlocked"
+                        ), "Channel unlocked"
                     )
 
-                    publicFollowUp {
+                    respond {
                         embed {
                             title = ":unlock: Channel unlocked"
                             color = DISCORD_GREEN

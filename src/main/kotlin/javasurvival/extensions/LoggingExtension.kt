@@ -3,23 +3,25 @@ package javasurvival.extensions
 import com.kotlindiscord.kord.extensions.DISCORD_RED
 import com.kotlindiscord.kord.extensions.DISCORD_YELLOW
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.download
 import com.kotlindiscord.kord.extensions.utils.getJumpUrl
 import dev.kord.common.Color
 import dev.kord.core.behavior.channel.createMessage
+import dev.kord.core.behavior.getChannelOf
 import dev.kord.core.entity.Attachment
+import dev.kord.core.entity.channel.GuildMessageChannel
 import dev.kord.core.event.message.MessageDeleteEvent
 import dev.kord.core.event.message.MessageUpdateEvent
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
-import javasurvival.config.BotConfig
-import org.koin.core.component.inject
+import javasurvival.LOGS_CHANNEL
+import javasurvival.getGuild
 
 private const val MAX_MSG_LENGTH = 500
 
 class LoggingExtension : Extension() {
     override val name: String = "logging"
-    private val config: BotConfig by inject()
 
     override suspend fun setup() {
         event<MessageDeleteEvent> {
@@ -31,7 +33,7 @@ class LoggingExtension : Extension() {
                 logAction(
                     "Message Deleted",
                     "Message send by ${author.mention} deleted in ${message.channel.mention}",
-                    author.avatar.url,
+                    author.avatar?.url ?: "",
                     DISCORD_RED,
                     {
                         name = "Message"
@@ -55,7 +57,7 @@ class LoggingExtension : Extension() {
                     "Message Edited",
                     "[Message](${old.getJumpUrl()})" +
                             " send by ${author.mention} edited in ${event.channel.mention}",
-                    author.avatar.url,
+                    author.avatar?.url ?: "",
                     DISCORD_YELLOW,
                     {
                         name = "Before"
@@ -82,7 +84,7 @@ class LoggingExtension : Extension() {
         vararg fields: EmbedBuilder.Field.() -> Unit,
         attachments: Set<Attachment> = setOf()
     ) {
-        val channel = config.getLogsChannel(bot)!!
+        val channel: GuildMessageChannel = bot.getGuild().getChannelOf(LOGS_CHANNEL)
 
         channel.createMessage {
             embed {

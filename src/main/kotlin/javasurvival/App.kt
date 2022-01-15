@@ -4,9 +4,7 @@
 package javasurvival
 
 import com.kotlindiscord.kord.extensions.ExtensibleBot
-import com.kotlindiscord.kord.extensions.checks.inGuild
 import com.kotlindiscord.kord.extensions.utils.loadModule
-import javasurvival.config.BotConfig
 import javasurvival.extensions.*
 import javasurvival.extensions.suggestions.JsonSuggestions
 import javasurvival.extensions.suggestions.SuggestionsData
@@ -14,13 +12,9 @@ import javasurvival.extensions.suggestions.SuggestionsExtension
 import org.koin.dsl.bind
 
 suspend fun main() {
-    val config = BotConfig()
-
-    val bot = ExtensibleBot(config.botToken) {
-        slashCommands {
-            check(inGuild(config.botGuild))
-
-            enabled = true
+    val bot = ExtensibleBot(DISCORD_TOKEN) {
+        applicationCommands {
+            defaultGuild(GUILD)
         }
 
         extensions {
@@ -39,7 +33,6 @@ suspend fun main() {
                 suggestions.load()
 
                 loadModule {
-                    single { config } bind BotConfig::class
                     single { suggestions } bind SuggestionsData::class
                 }
             }

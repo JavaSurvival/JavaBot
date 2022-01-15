@@ -1,28 +1,23 @@
 package javasurvival.extensions
 
+import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.channel
-import com.kotlindiscord.kord.extensions.commands.parser.Arguments
-import com.kotlindiscord.kord.extensions.commands.slash.AutoAckType
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.common.annotation.KordPreview
-import javasurvival.config.BotConfig
-import org.koin.core.component.inject
 
 @OptIn(KordPreview::class)
 class UserExtension : Extension() {
     override val name: String = "user"
-    val config: BotConfig by inject()
 
     override suspend fun setup() {
-        slashCommand(UserExtension::GotoArguments) {
+        publicSlashCommand(::GotoArguments) {
             name = "goto"
-            description = "extensions.user.goto.desc"
-
-            guild(config.botGuild)
-            autoAck = AutoAckType.PUBLIC
+            description = "Send users to another channel"
 
             action {
-                this.publicFollowUp {
+                this.respond {
                     content = "**GO TO** :arrow_right::arrow_right:${arguments.channel.mention}:arrow_left::arrow_left:"
                 }
             }

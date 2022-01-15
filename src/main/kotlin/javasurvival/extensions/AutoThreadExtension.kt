@@ -1,16 +1,17 @@
 package javasurvival.extensions
 
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.event
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.message.MessageCreateEvent
-import javasurvival.config.BotConfig
-import org.koin.core.component.inject
+import javasurvival.GUILD
+import javasurvival.ISSUES_CHANNEL
+import javasurvival.SCREENSHOT_CHANNELS
 
 class AutoThreadExtension : Extension() {
     override val name = "auto-thread"
 
-    private val config: BotConfig by inject()
-    private val threadChannels = config.channelScreenshots.toMutableSet().apply { this.add(config.channelIssues) }
+    private val threadChannels = SCREENSHOT_CHANNELS.toMutableSet().apply { this.add(ISSUES_CHANNEL) }
 
     override suspend fun setup() {
         event<MessageCreateEvent> {
@@ -20,7 +21,7 @@ class AutoThreadExtension : Extension() {
 
             action {
                 if (
-                    config.channelScreenshots.contains(event.message.channelId) &&
+                    SCREENSHOT_CHANNELS.contains(event.message.channelId) &&
                     event.message.embeds.isEmpty() &&
                     event.message.attachments.isEmpty()
                 ) {
@@ -28,13 +29,10 @@ class AutoThreadExtension : Extension() {
                     return@action
                 }
 
-                val thread =
-                    (event.message.channel.asChannel() as TextChannel)
-                        .startPublicThreadWithMessage(
-                            messageId = event.message.id,
-                            name = (event.message.author?.asMember(config.botGuild)?.displayName
-                                ?: "Unknown") + " Discussion"
-                        )
+                val thread = (event.message.channel.asChannel() as TextChannel).startPublicThreadWithMessage(
+                    messageId = event.message.id,
+                    name = (event.message.author?.asMember(GUILD)?.displayName ?: "Unknown") + " Discussion"
+                )
                 thread.leave()
             }
         }

@@ -4,14 +4,17 @@
 
 package javasurvival.extensions.suggestions
 
-import com.kotlindiscord.kord.extensions.CommandException
-import com.kotlindiscord.kord.extensions.checks.isNotbot
+import com.kotlindiscord.kord.extensions.DiscordRelayedException
+import com.kotlindiscord.kord.extensions.checks.isNotBot
+import com.kotlindiscord.kord.extensions.commands.Arguments
+import com.kotlindiscord.kord.extensions.commands.application.slash.converters.ChoiceEnum
+import com.kotlindiscord.kord.extensions.commands.application.slash.converters.impl.enumChoice
 import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescedString
 import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalCoalescingString
-import com.kotlindiscord.kord.extensions.commands.parser.Arguments
-import com.kotlindiscord.kord.extensions.commands.slash.converters.ChoiceEnum
-import com.kotlindiscord.kord.extensions.commands.slash.converters.impl.enumChoice
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
+import com.kotlindiscord.kord.extensions.extensions.event
+import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.ackEphemeral
 import com.kotlindiscord.kord.extensions.utils.delete
 import com.kotlindiscord.kord.extensions.utils.dm
@@ -36,7 +39,8 @@ import dev.kord.rest.builder.message.create.embed
 import dev.kord.rest.builder.message.modify.MessageModifyBuilder
 import dev.kord.rest.builder.message.modify.actionRow
 import dev.kord.rest.builder.message.modify.embed
-import javasurvival.config.BotConfig
+import javasurvival.ADMIN_ROLE
+import javasurvival.SUGGESTIONS_CHANNEL
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.core.component.inject
 import kotlin.time.ExperimentalTime
@@ -57,16 +61,15 @@ private val EMOTE_UPVOTE = ReactionEmoji.Unicode("⬆️")
 class SuggestionsExtension : Extension() {
     override val name: String = "suggestions"
 
-    private val config: BotConfig by inject()
     private val suggestions: SuggestionsData by inject()
     private val messageCache: MutableList<Pair<String, Snowflake>> = mutableListOf()
 
-    suspend fun suggestionChannel() = kord.getChannelOf<TextChannel>(config.channelSuggestions)!!
+    suspend fun suggestionChannel(): TextChannel = kord.getChannelOf(SUGGESTIONS_CHANNEL)!!
 
     override suspend fun setup() {
         event<MessageCreateEvent> {
-            check(isNotbot)
-            check { failIfNot(event.message.channelId == config.channelSuggestions) }
+            check { isNotBot() }
+            check { failIfNot(event.message.channelId == SUGGESTIONS_CHANNEL) }
             check { failIfNot(event.message.content.trim().isNotEmpty()) }
             check { failIfNot(event.message.interaction == null) }
 
@@ -78,7 +81,7 @@ class SuggestionsExtension : Extension() {
                     text = event.message.content,
 
                     owner = event.message.author!!.id.asString,
-                    ownerAvatar = event.message.author!!.avatar.url,
+                    ownerAvatar = event.message.author!!.avatar!!.url,
                     ownerName = event.message.author!!.asMember(event.message.getGuild().id).displayName,
 
                     positiveVoters = mutableListOf(event.message.author!!.id)
@@ -118,10 +121,10 @@ class SuggestionsExtension : Extension() {
         }
 
         event<MessageDeleteEvent> {
-            check(isNotbot)
+            check { isNotBot() }
             check { failIfNot(event.message?.author != null) }
             check { failIfNot(event.message?.webhookId == null) }
-            check { failIfNot(event.message?.channelId == config.channelSuggestions) }
+            check { failIfNot(event.message?.channelId == SUGGESTIONS_CHANNEL) }
             check { failIfNot(event.message?.content?.trim()?.isNotEmpty() == true) }
             check { failIfNot(event.message?.interaction == null) }
 
@@ -135,7 +138,7 @@ class SuggestionsExtension : Extension() {
         }
 
         event<InteractionCreateEvent> {
-            check { failIfNot(event.interaction.channelId == config.channelSuggestions) }
+            check { failIfNot(event.interaction.channelId == SUGGESTIONS_CHANNEL) }
             check { failIfNot(event.interaction is ButtonInteraction) }
 
             action {
@@ -221,15 +224,13 @@ class SuggestionsExtension : Extension() {
             }
         }
 
-        slashCommand(::SuggestionEditArguments) {
+        ephemeralSlashCommand(::SuggestionEditArguments) {
             name = "suggestion-edit"
             description = "Edit one of your suggestions"
 
-            guild(config.botGuild)
-
             action {
                 if (arguments.suggestion.owner != user.id.asString) {
-                    ephemeralFollowUp {
+                    respond {
                         content = "**Error:** You don't own that suggestion."
                     }
 
@@ -244,18 +245,17 @@ class SuggestionsExtension : Extension() {
                     content = "Suggestion Updated"
                 }
 
-                ephemeralFollowUp {
+                respond {
                     content = "Suggestion updated."
                 }
             }
         }
 
-        slashCommand(::SuggestionStatusArguments) {
+        ephemeralSlashCommand(::SuggestionStatusArguments) {
             name = "suggestion-status"
             description = "Change the status of a suggestion"
 
-            allowRole(config.rolesAdmin)
-            guild(config.botGuild)
+            allowRole(ADMIN_ROLE)
 
             action {
                 arguments.suggestion.status = arguments.status.status
@@ -268,7 +268,7 @@ class SuggestionsExtension : Extension() {
                     content = "Suggestion Updated"
                 }
 
-                ephemeralFollowUp {
+                respond {
                     content = "Suggestion updated."
                 }
             }
@@ -414,7 +414,9 @@ class SuggestionsExtension : Extension() {
 
         val text by coalescedString("text", "New suggestion text") { _, str ->
             if (str.length > SUGGESTION_SIZE_LIMIT) {
-                throw CommandException("Suggestion text must not be longer than $SUGGESTION_SIZE_LIMIT characters.")
+                throw DiscordRelayedException(
+                    "Suggestion text must not be longer than $SUGGESTION_SIZE_LIMIT characters."
+                )
             }
         }
     }
@@ -427,8 +429,8 @@ class SuggestionsExtension : Extension() {
             "status"
         )
         val comment by optionalCoalescingString("comment", "Comment text to set") { _, str ->
-            if (str?.length ?: -1 > COMMENT_SIZE_LIMIT) {
-                throw CommandException("Comment must not be longer than $COMMENT_SIZE_LIMIT characters.")
+            if ((str?.length ?: -1) > COMMENT_SIZE_LIMIT) {
+                throw DiscordRelayedException("Comment must not be longer than $COMMENT_SIZE_LIMIT characters.")
             }
         }
     }
