@@ -21,6 +21,7 @@ import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.builder.message.create.embed
 import javasurvival.GUILD
 import javasurvival.MOD_ROLE
+import javasurvival.TICKET_ROLE
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
@@ -117,7 +118,7 @@ private suspend fun TextChannelThread.setup(member: Member) {
         delay(3.seconds)
     }
     message.edit {
-        content = "Adding <@&${MOD_ROLE.value}>.."
+        content = "Adding <@&${TICKET_ROLE.value}>.."
     }
     withTyping {
         delay(3.seconds)
