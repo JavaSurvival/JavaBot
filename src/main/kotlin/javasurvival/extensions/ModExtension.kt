@@ -6,9 +6,12 @@ import com.kotlindiscord.kord.extensions.DISCORD_GREEN
 import com.kotlindiscord.kord.extensions.DISCORD_RED
 import com.kotlindiscord.kord.extensions.checks.topRoleHigherOrEqual
 import com.kotlindiscord.kord.extensions.commands.Arguments
+import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingBoolean
 import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingInt
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
+import com.kotlindiscord.kord.extensions.types.edit
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
 import com.kotlindiscord.kord.extensions.utils.scheduling.Task
@@ -16,9 +19,11 @@ import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.edit
+import dev.kord.core.behavior.channel.threads.edit
 import dev.kord.core.entity.PermissionOverwrite
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.entity.channel.TopGuildChannel
+import dev.kord.core.entity.channel.thread.ThreadChannel
 import dev.kord.rest.builder.message.create.embed
 import javasurvival.MOD_ROLE
 import kotlin.time.DurationUnit
@@ -136,6 +141,35 @@ class ModExtension : Extension() {
                 }
             }
         }
+
+        ephemeralSlashCommand(::ArchiveArgs) {
+            name = "archive"
+            description = "Archive the current thread"
+
+            check { topRoleHigherOrEqual(MOD_ROLE) }
+            check { failIfNot(this.event.interaction.channel.asChannel() is ThreadChannel) }
+
+            action {
+                val channel = channel.asChannel() as ThreadChannel
+
+                channel.edit {
+                    this.archived = true
+                    this.locked = arguments.lock
+
+                    reason = "Archived by ${user.asUser().tag}"
+                }
+
+                edit {
+                    content = "Thread archived"
+
+                    if (arguments.lock) {
+                        content += " and locked"
+                    }
+
+                    content += "."
+                }
+            }
+        }
     }
 
     @KordPreview
@@ -148,5 +182,13 @@ class ModExtension : Extension() {
     @KordPreview
     class LockArgs : Arguments() {
         val duration by defaultingInt("duration", "How long to lock the channel in minutes", DEFAULT_LOCK_DUR)
+    }
+
+    inner class ArchiveArgs : Arguments() {
+        val lock by defaultingBoolean(
+            "lock",
+            "Whether to lock the thread, if you're staff - defaults to false",
+            false
+        )
     }
 }

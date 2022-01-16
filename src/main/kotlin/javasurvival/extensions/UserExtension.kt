@@ -24,7 +24,7 @@ class UserExtension : Extension() {
         }
     }
 
-    class GotoArguments : Arguments() {
+    inner class GotoArguments : Arguments() {
         val channel by channel("channel", "Channel to go to")
     }
 }

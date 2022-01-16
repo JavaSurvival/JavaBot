@@ -64,7 +64,7 @@ class SuggestionsExtension : Extension() {
     private val suggestions: SuggestionsData by inject()
     private val messageCache: MutableList<Pair<String, Snowflake>> = mutableListOf()
 
-    suspend fun suggestionChannel(): TextChannel = kord.getChannelOf(SUGGESTIONS_CHANNEL)!!
+    private suspend fun suggestionChannel(): TextChannel = kord.getChannelOf(SUGGESTIONS_CHANNEL)!!
 
     override suspend fun setup() {
         event<MessageCreateEvent> {

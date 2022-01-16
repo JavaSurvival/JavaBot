@@ -13,6 +13,10 @@ import org.koin.dsl.bind
 
 suspend fun main() {
     val bot = ExtensibleBot(DISCORD_TOKEN) {
+        chatCommands {
+            enabled = true
+        }
+
         applicationCommands {
             defaultGuild(GUILD)
         }
@@ -25,6 +29,7 @@ suspend fun main() {
             add(::ReactionRoleExtension)
             add(::SuggestionsExtension)
             add(::AutoThreadExtension)
+            add(::TicketsExtension)
         }
 
         hooks {
