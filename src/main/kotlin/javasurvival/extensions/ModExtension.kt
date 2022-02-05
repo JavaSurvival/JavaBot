@@ -53,7 +53,7 @@ class ModExtension : Extension() {
             check { failIfNot(this.event.interaction.channel.asChannel() is TextChannel) }
 
             action {
-                val channel = channel as TextChannel
+                val channel = channel.asChannel() as TextChannel
 
                 val limit = arguments.limit.coerceIn(MIN_LENGTH..MAX_LIMIT)
                 val duration = arguments.duration.coerceIn(MIN_LENGTH..MAX_DURATION)
