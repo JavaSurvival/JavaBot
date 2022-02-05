@@ -10,10 +10,7 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.chatCommand
 import com.kotlindiscord.kord.extensions.extensions.event
 import com.kotlindiscord.kord.extensions.utils.hasPermission
-import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.DiscordPartialEmoji
-import dev.kord.common.entity.Permission
-import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.*
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.channel.threads.edit
 import dev.kord.core.behavior.channel.withTyping
@@ -101,7 +98,11 @@ class TicketsExtension : Extension() {
                     "help" -> {
                         interaction.acknowledgeEphemeralDeferredMessageUpdate()
                         val channel = (event.interaction.channel.asChannel()) as TextChannel
-                        val thread = channel.startPrivateThread("${member.displayName} Help Ticket")
+                        val thread = channel.startPrivateThread(
+                            "${member.displayName} Help Ticket",
+                            interaction.channel.asChannel().data.defaultAutoArchiveDuration.value
+                                ?: ArchiveDuration.Day
+                        )
                         thread.addUser(member.id)
                         thread.setup(
                             """
@@ -113,7 +114,11 @@ class TicketsExtension : Extension() {
                     "appeal" -> {
                         interaction.acknowledgeEphemeralDeferredMessageUpdate()
                         val channel = (event.interaction.channel.asChannel()) as TextChannel
-                        val thread = channel.startPrivateThread("${member.displayName} Appeal")
+                        val thread = channel.startPrivateThread(
+                            "${member.displayName} Appeal",
+                            interaction.channel.asChannel().data.defaultAutoArchiveDuration.value
+                                ?: ArchiveDuration.Day
+                        )
                         thread.addUser(member.id)
                         thread.setup(
                             """

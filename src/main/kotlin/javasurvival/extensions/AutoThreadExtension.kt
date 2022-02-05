@@ -2,6 +2,7 @@ package javasurvival.extensions
 
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.event
+import dev.kord.common.entity.ArchiveDuration
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.event.message.MessageCreateEvent
 import javasurvival.GUILD
@@ -31,7 +32,9 @@ class AutoThreadExtension : Extension() {
 
                 val thread = (event.message.channel.asChannel() as TextChannel).startPublicThreadWithMessage(
                     messageId = event.message.id,
-                    name = (event.message.author?.asMember(GUILD)?.displayName ?: "Unknown") + " Discussion"
+                    name = (event.message.author?.asMember(GUILD)?.displayName ?: "Unknown") + " Discussion",
+                    archiveDuration = event.message.channel.asChannel().data.defaultAutoArchiveDuration.value
+                        ?: ArchiveDuration.Day
                 )
                 thread.leave()
             }

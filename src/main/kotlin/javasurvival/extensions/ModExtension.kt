@@ -7,7 +7,9 @@ import com.kotlindiscord.kord.extensions.DISCORD_RED
 import com.kotlindiscord.kord.extensions.checks.topRoleHigherOrEqual
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingInt
+import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.Extension
+import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import com.kotlindiscord.kord.extensions.utils.scheduling.Scheduler
@@ -136,17 +138,32 @@ class ModExtension : Extension() {
                 }
             }
         }
+
+        ephemeralSlashCommand(::SayArgs) {
+            name = "say"
+            description = "say"
+            allowRole(MOD_ROLE)
+
+            action {
+                channel.createMessage(arguments.message)
+                respond { content = "Done" }
+            }
+        }
     }
 
     @KordPreview
-    class SlowmodeArgs : Arguments() {
+    inner class SlowmodeArgs : Arguments() {
         val limit by defaultingInt("limit", "Number of seconds between messages", DEFAULT_SLOWMODE_LIMIT)
 
         val duration by defaultingInt("duration", "How long to enable slowmode in minutes", DEFAULT_SLOWMODE_DUR)
     }
 
     @KordPreview
-    class LockArgs : Arguments() {
+    inner class LockArgs : Arguments() {
         val duration by defaultingInt("duration", "How long to lock the channel in minutes", DEFAULT_LOCK_DUR)
+    }
+
+    inner class SayArgs : Arguments() {
+        val message by string("message", "The message")
     }
 }
