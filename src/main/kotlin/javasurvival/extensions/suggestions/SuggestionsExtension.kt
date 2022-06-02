@@ -4,13 +4,12 @@
 
 package javasurvival.extensions.suggestions
 
-import com.kotlindiscord.kord.extensions.DiscordRelayedException
 import com.kotlindiscord.kord.extensions.checks.isNotBot
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.application.slash.converters.ChoiceEnum
 import com.kotlindiscord.kord.extensions.commands.application.slash.converters.impl.enumChoice
-import com.kotlindiscord.kord.extensions.commands.converters.impl.coalescedString
-import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalCoalescingString
+import com.kotlindiscord.kord.extensions.commands.converters.impl.optionalString
+import com.kotlindiscord.kord.extensions.commands.converters.impl.string
 import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.ephemeralSlashCommand
 import com.kotlindiscord.kord.extensions.extensions.event
@@ -23,7 +22,7 @@ import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.edit
-import dev.kord.core.behavior.interaction.followUpEphemeral
+import dev.kord.core.behavior.interaction.response.createEphemeralFollowup
 import dev.kord.core.behavior.reply
 import dev.kord.core.builder.components.emoji
 import dev.kord.core.entity.Message
@@ -39,7 +38,6 @@ import dev.kord.rest.builder.message.create.embed
 import dev.kord.rest.builder.message.modify.MessageModifyBuilder
 import dev.kord.rest.builder.message.modify.actionRow
 import dev.kord.rest.builder.message.modify.embed
-import javasurvival.ADMIN_ROLE
 import javasurvival.SUGGESTIONS_CHANNEL
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.core.component.inject
@@ -154,7 +152,7 @@ class SuggestionsExtension : Extension() {
                 val response = interaction.ackEphemeral(false)
 
                 if (suggestion.status != SuggestionStatus.Open) {
-                    response.followUpEphemeral {
+                    response.createEphemeralFollowup {
                         content = "**Error:** This suggestion isn't open, and votes can't be changed."
                     }
 
@@ -166,11 +164,11 @@ class SuggestionsExtension : Extension() {
                         suggestion.positiveVoters.add(interaction.user.id)
                         suggestion.negativeVoters.remove(interaction.user.id)
 
-                        response.followUpEphemeral {
+                        response.createEphemeralFollowup {
                             content = "Vote registered!"
                         }
                     } else {
-                        response.followUpEphemeral {
+                        response.createEphemeralFollowup {
                             content = "**Error:** You've already upvoted this suggestion."
                         }
 
@@ -181,11 +179,11 @@ class SuggestionsExtension : Extension() {
                         suggestion.negativeVoters.add(interaction.user.id)
                         suggestion.positiveVoters.remove(interaction.user.id)
 
-                        response.followUpEphemeral {
+                        response.createEphemeralFollowup {
                             content = "Vote registered!"
                         }
                     } else {
-                        response.followUpEphemeral {
+                        response.createEphemeralFollowup {
                             content = "**Error:** You've already downvoted this suggestion."
                         }
 
@@ -195,24 +193,24 @@ class SuggestionsExtension : Extension() {
                     ACTION_REMOVE -> if (suggestion.positiveVoters.contains(interaction.user.id)) {
                         suggestion.positiveVoters.remove(interaction.user.id)
 
-                        response.followUpEphemeral {
+                        response.createEphemeralFollowup {
                             content = "Vote removed!"
                         }
                     } else if (suggestion.negativeVoters.contains(interaction.user.id)) {
                         suggestion.negativeVoters.remove(interaction.user.id)
 
-                        response.followUpEphemeral {
+                        response.createEphemeralFollowup {
                             content = "Vote removed!"
                         }
                     } else {
-                        response.followUpEphemeral {
+                        response.createEphemeralFollowup {
                             content = "**Error:** You haven't voted for this suggestion."
                         }
 
                         return@action
                     }
 
-                    else -> response.followUpEphemeral {
+                    else -> response.createEphemeralFollowup {
                         content = "Unknown action: $action"
 
                         return@action
@@ -254,8 +252,6 @@ class SuggestionsExtension : Extension() {
         ephemeralSlashCommand(::SuggestionStatusArguments) {
             name = "suggestion-status"
             description = "Change the status of a suggestion"
-
-            allowRole(ADMIN_ROLE)
 
             action {
                 arguments.suggestion.status = arguments.status.status
@@ -410,11 +406,18 @@ class SuggestionsExtension : Extension() {
     }
 
     inner class SuggestionEditArguments : Arguments() {
-        val suggestion by suggestion("suggestion", "Suggestion ID to act on")
+        val suggestion by suggestion {
+            name = "suggestion"
+            description = "Suggestion ID to act on"
+        }
 
-        val text by coalescedString("text", "New suggestion text") { _, str ->
-            if (str.length > SUGGESTION_SIZE_LIMIT) {
-                throw DiscordRelayedException(
+        val text by string {
+            name = "text"
+            description = "New suggestion text"
+
+            validate {
+                failIf(
+                    value.length > SUGGESTION_SIZE_LIMIT,
                     "Suggestion text must not be longer than $SUGGESTION_SIZE_LIMIT characters."
                 )
             }
@@ -422,15 +425,24 @@ class SuggestionsExtension : Extension() {
     }
 
     inner class SuggestionStatusArguments : Arguments() {
-        val suggestion by suggestion("suggestion", "Suggestion ID to act on")
-        val status by enumChoice<SuggestionStatusAction>(
-            "status",
-            "The new status of the suggestion",
-            "status"
-        )
-        val comment by optionalCoalescingString("comment", "Comment text to set") { _, str ->
-            if ((str?.length ?: -1) > COMMENT_SIZE_LIMIT) {
-                throw DiscordRelayedException("Comment must not be longer than $COMMENT_SIZE_LIMIT characters.")
+        val suggestion by suggestion {
+            name = "suggestion"
+            description = "Suggestion ID to act on"
+        }
+        val status by enumChoice<SuggestionStatusAction> {
+            name = "status"
+            description = "The new status of the suggestion"
+            typeName = "status"
+        }
+        val comment by optionalString {
+            name = "comment"
+            description = "Comment text to set"
+
+            validate {
+                failIf(
+                    (value?.length ?: -1) > COMMENT_SIZE_LIMIT,
+                    "Comment must not be longer than $COMMENT_SIZE_LIMIT characters."
+                )
             }
         }
     }

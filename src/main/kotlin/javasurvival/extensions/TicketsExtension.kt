@@ -31,12 +31,10 @@ import javasurvival.TICKET_ROLE
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
 class TicketsExtension : Extension() {
     override val name = "tickets"
 
-    @OptIn(ExperimentalTime::class)
     override suspend fun setup() {
         chatCommand {
             name = "ticket-message"
@@ -75,6 +73,11 @@ class TicketsExtension : Extension() {
 
                             label = "Open Appeal Ticket"
                         }
+                        interactionButton(ButtonStyle.Secondary, "tickets/view") {
+                            emoji = DiscordPartialEmoji(name = "🎫")
+
+                            label = "View Archived Tickets"
+                        }
                     }
                 }
             }
@@ -87,7 +90,7 @@ class TicketsExtension : Extension() {
 
                 val interaction = event.interaction as ButtonInteraction
 
-                failIfNot { "/" in interaction.componentId }
+                failIfNot { interaction.componentId.startsWith("tickets/") }
             }
 
             action {
@@ -95,8 +98,18 @@ class TicketsExtension : Extension() {
                 val member = interaction.user.asMember(GUILD)
 
                 when (interaction.componentId.split('/', limit = 2)[1]) {
+                    "view" -> interaction.respondEphemeral {
+                        embed {
+                            title = "Viewing Archived Tickets on PC"
+                            image = "https://i.imgur.com/M9Hnr2U.png"
+                        }
+                        embed {
+                            title = "Viewing Archived Tickets on Mobile"
+                            image = "https://i.imgur.com/2BhgYKm.gif"
+                        }
+                    }
                     "help" -> {
-                        interaction.acknowledgeEphemeralDeferredMessageUpdate()
+                        interaction.deferEphemeralMessageUpdate()
                         val channel = (event.interaction.channel.asChannel()) as TextChannel
                         val thread = channel.startPrivateThread(
                             "${member.displayName} Help Ticket",
@@ -112,7 +125,7 @@ class TicketsExtension : Extension() {
                         interaction.respondEphemeral { content = "Ticket Opened" }
                     }
                     "appeal" -> {
-                        interaction.acknowledgeEphemeralDeferredMessageUpdate()
+                        interaction.deferEphemeralMessageUpdate()
                         val channel = (event.interaction.channel.asChannel()) as TextChannel
                         val thread = channel.startPrivateThread(
                             "${member.displayName} Appeal",
@@ -192,7 +205,6 @@ class TicketsExtension : Extension() {
     }
 }
 
-@OptIn(ExperimentalTime::class)
 private suspend fun TextChannelThread.setup(final: String) {
     val message = createMessage("Thanks for opening a ticket!")
     withTyping {

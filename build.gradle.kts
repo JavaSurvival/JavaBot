@@ -23,6 +23,11 @@ repositories {
         name = "Kotlin Discord"
         url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
     }
+
+    maven {
+        name = "QuiltMC"
+        url = uri("https://maven.quiltmc.org/repository/snapshot/")
+    }
 }
 
 dependencies {

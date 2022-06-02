@@ -6,6 +6,7 @@ import com.kotlindiscord.kord.extensions.extensions.Extension
 import com.kotlindiscord.kord.extensions.extensions.publicSlashCommand
 import com.kotlindiscord.kord.extensions.types.respond
 import dev.kord.common.annotation.KordPreview
+import dev.kord.common.entity.ChannelType
 
 @OptIn(KordPreview::class)
 class UserExtension : Extension() {
@@ -25,6 +26,10 @@ class UserExtension : Extension() {
     }
 
     inner class GotoArguments : Arguments() {
-        val channel by channel("channel", "Channel to go to")
+        val channel by channel {
+            name = "channel"
+            description = "Channel to go to"
+            requireChannelType(ChannelType.GuildText)
+        }
     }
 }

@@ -4,7 +4,6 @@ package javasurvival.extensions
 
 import com.kotlindiscord.kord.extensions.DISCORD_GREEN
 import com.kotlindiscord.kord.extensions.DISCORD_RED
-import com.kotlindiscord.kord.extensions.checks.topRoleHigherOrEqual
 import com.kotlindiscord.kord.extensions.commands.Arguments
 import com.kotlindiscord.kord.extensions.commands.converters.impl.defaultingInt
 import com.kotlindiscord.kord.extensions.commands.converters.impl.string
@@ -22,9 +21,8 @@ import dev.kord.core.entity.PermissionOverwrite
 import dev.kord.core.entity.channel.TextChannel
 import dev.kord.core.entity.channel.TopGuildChannel
 import dev.kord.rest.builder.message.create.embed
-import javasurvival.MOD_ROLE
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
 import kotlin.time.toDuration
 
 private const val MIN_LENGTH = 1
@@ -43,13 +41,11 @@ class ModExtension : Extension() {
     private val channelJobs = mutableMapOf<Snowflake, Task>()
 
     @OptIn(KordPreview::class)
-    @ExperimentalTime
     override suspend fun setup() {
         publicSlashCommand(::SlowmodeArgs) {
             name = "slowmode"
             description = "Enables slowmode on a channel for a period of time"
 
-            check { topRoleHigherOrEqual(MOD_ROLE) }
             check { failIfNot(this.event.interaction.channel.asChannel() is TextChannel) }
 
             action {
@@ -59,7 +55,7 @@ class ModExtension : Extension() {
                 val duration = arguments.duration.coerceIn(MIN_LENGTH..MAX_DURATION)
 
                 channel.edit {
-                    rateLimitPerUser = limit
+                    rateLimitPerUser = limit.seconds
                 }
 
                 respond {
@@ -75,7 +71,7 @@ class ModExtension : Extension() {
                     duration.toDuration(DurationUnit.MINUTES).toLong(DurationUnit.SECONDS)
                 ) {
                     channel.edit {
-                        rateLimitPerUser = 0
+                        rateLimitPerUser = null
                     }
                 }
 
@@ -87,7 +83,6 @@ class ModExtension : Extension() {
             name = "lock"
             description = "Locks a channel for a period of time"
 
-            check { topRoleHigherOrEqual(MOD_ROLE) }
             check { failIfNot(this.event.interaction.channel.asChannel() is TopGuildChannel) }
 
             action {
@@ -142,7 +137,6 @@ class ModExtension : Extension() {
         ephemeralSlashCommand(::SayArgs) {
             name = "say"
             description = "say"
-            allowRole(MOD_ROLE)
 
             action {
                 channel.createMessage(arguments.message)
@@ -153,17 +147,32 @@ class ModExtension : Extension() {
 
     @KordPreview
     inner class SlowmodeArgs : Arguments() {
-        val limit by defaultingInt("limit", "Number of seconds between messages", DEFAULT_SLOWMODE_LIMIT)
+        val limit by defaultingInt {
+            name = "limit"
+            description = "Number of seconds between messages"
+            defaultValue = DEFAULT_SLOWMODE_LIMIT
+        }
 
-        val duration by defaultingInt("duration", "How long to enable slowmode in minutes", DEFAULT_SLOWMODE_DUR)
+        val duration by defaultingInt {
+            name = "duration"
+            description = "How long to enable slowmode in minutes"
+            defaultValue = DEFAULT_SLOWMODE_DUR
+        }
     }
 
     @KordPreview
     inner class LockArgs : Arguments() {
-        val duration by defaultingInt("duration", "How long to lock the channel in minutes", DEFAULT_LOCK_DUR)
+        val duration by defaultingInt {
+            name = "duration"
+            description = "How long to lock the channel in minutes"
+            defaultValue = DEFAULT_LOCK_DUR
+        }
     }
 
     inner class SayArgs : Arguments() {
-        val message by string("message", "The message")
+        val message by string {
+            name = "message"
+            description = "The message"
+        }
     }
 }
