@@ -1,9 +1,9 @@
 package javasurvival
 
-import com.gitlab.kordlib.kordx.emoji.Emojis
 import com.kotlindiscord.kord.extensions.utils.env
 import com.kotlindiscord.kord.extensions.utils.envOrNull
 import dev.kord.common.entity.Snowflake
+import dev.kord.x.emoji.Emojis
 
 internal val DISCORD_TOKEN = env("TOKEN")
 

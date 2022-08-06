@@ -1,13 +1,13 @@
 [versions]
 detekt = "1.19.0"  # Note: Plugin versions must be updated in the settings.gradle.kts too
-kotlin = "1.6.21"  # Note: Plugin versions must be updated in the settings.gradle.kts too
+kotlin = "1.7.10"  # Note: Plugin versions must be updated in the settings.gradle.kts too
 
-kordex = "1.5.4-SNAPSHOT"
-kordx-emoji = "0.4.0"
-kx-ser = "1.3.2"
-logging = "2.1.21"
+kordex = "1.5.5-SNAPSHOT"
+kordx-emoji = "0.5.0"
+kx-ser = "1.3.3"
+logging = "2.1.23"
 logback = "1.2.5"
-groovy = "3.0.8"
+groovy = "3.0.9"
 jansi = "2.4.0"
 
 [libraries]
@@ -19,7 +19,7 @@ kordex-annotationProcessor = { module = "com.kotlindiscord.kord.extensions:annot
 kordex-core = { module = "com.kotlindiscord.kord.extensions:kord-extensions", version.ref = "kordex" }
 kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8" }
-kordx-emoji = { module = "com.gitlab.kordlib:kordx.emoji", version.ref = "kordx-emoji" }
+kordx-emoji = { module = "dev.kord.x:emoji", version.ref = "kordx-emoji" }
 kx-ser = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kx-ser" }
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 logging = { module = "io.github.microutils:kotlin-logging", version.ref = "logging" }

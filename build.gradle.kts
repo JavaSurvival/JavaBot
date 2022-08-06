@@ -13,11 +13,17 @@ plugins {
 }
 
 group = "javasurvival"
-version = "1.1-SNAPSHOT"
+version = "1.2-SNAPSHOT"
 
 repositories {
     // You can remove this if you're not testing locally-installed KordEx builds
     mavenLocal()
+    mavenCentral()
+
+    maven {
+        name = "Sonatype Snapshots"
+        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+    }
 
     maven {
         name = "Kotlin Discord"
