@@ -15,6 +15,8 @@ import dev.kord.core.event.message.MessageDeleteEvent
 import dev.kord.core.event.message.MessageUpdateEvent
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.embed
+import io.ktor.client.request.forms.*
+import io.ktor.utils.io.jvm.javaio.*
 import javasurvival.LOGS_CHANNEL
 import javasurvival.getGuild
 
@@ -33,7 +35,7 @@ class LoggingExtension : Extension() {
                 logAction(
                     "Message Deleted",
                     "Message send by ${author.mention} deleted in ${message.channel.mention}",
-                    author.avatar?.url ?: "",
+                    author.avatar?.cdnUrl?.toUrl() ?: "",
                     DISCORD_RED,
                     {
                         name = "Message"
@@ -57,7 +59,7 @@ class LoggingExtension : Extension() {
                     "Message Edited",
                     "[Message](${old.getJumpUrl()})" +
                             " send by ${author.mention} edited in ${event.channel.mention}",
-                    author.avatar?.url ?: "",
+                    author.avatar?.cdnUrl?.toUrl() ?: "",
                     DISCORD_YELLOW,
                     {
                         name = "Before"
@@ -100,7 +102,8 @@ class LoggingExtension : Extension() {
             }
 
             for (attachment in attachments) {
-                addFile(attachment.filename, attachment.download().inputStream())
+                val file = attachment.download()
+                addFile(attachment.filename, ChannelProvider { file.inputStream().toByteReadChannel() })
             }
         }
     }

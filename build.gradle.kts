@@ -16,20 +16,14 @@ group = "javasurvival"
 version = "1.2-SNAPSHOT"
 
 repositories {
-    // You can remove this if you're not testing locally-installed KordEx builds
-    mavenLocal()
     mavenCentral()
-
     maven {
         name = "Sonatype Snapshots"
-        url = uri("https://oss.sonatype.org/content/repositories/snapshots")
+        url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots")
     }
-
     maven {
-        name = "Kotlin Discord"
-        url = uri("https://maven.kotlindiscord.com/repository/maven-public/")
+        url =  uri("https://oss.sonatype.org/content/repositories/snapshots")
     }
-
     maven {
         name = "QuiltMC"
         url = uri("https://maven.quiltmc.org/repository/snapshot/")
@@ -42,7 +36,10 @@ dependencies {
     ksp(libs.kordex.annotationProcessor)
 
     implementation(libs.kordex.annotations)
-    implementation(libs.kordex.core)
+    implementation(libs.kordex.core) {
+        exclude(group = "dev.kord")
+    }
+    implementation(libs.kord.core)
 
     implementation(libs.jansi)
     implementation(libs.logback)
@@ -53,7 +50,9 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.kx.ser)
 
-    implementation(libs.kordx.emoji)
+    implementation(libs.kordx.emoji) {
+        exclude(group = "dev.kord")
+    }
 }
 
 application {

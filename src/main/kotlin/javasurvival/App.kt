@@ -25,7 +25,6 @@ suspend fun main() {
             add(::LoggingExtension)
             add(::UserExtension)
             add(::ModExtension)
-            add(::PronounExtension)
             add(::ReactionRoleExtension)
             add(::SuggestionsExtension)
             add(::AutoThreadExtension)

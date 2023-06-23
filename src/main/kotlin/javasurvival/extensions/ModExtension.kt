@@ -119,7 +119,8 @@ class ModExtension : Extension() {
                             channel.guildId,
                             perms.allowed,
                             perms.denied - Permission.SendMessages - Permission.AddReactions
-                        ), "Channel unlocked"
+                        ),
+                        "Channel unlocked"
                     )
 
                     respond {

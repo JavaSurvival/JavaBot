@@ -112,14 +112,12 @@ class TicketsExtension : Extension() {
                         interaction.deferEphemeralMessageUpdate()
                         val channel = (event.interaction.channel.asChannel()) as TextChannel
                         val thread = channel.startPrivateThread(
-                            "${member.displayName} Help Ticket",
-                            interaction.channel.asChannel().data.defaultAutoArchiveDuration.value
-                                ?: ArchiveDuration.Day
+                            "${member.effectiveName} Help Ticket"
                         )
                         thread.addUser(member.id)
                         thread.setup(
                             """
-                            Thanks for opening a ticket ${member.displayName}! Please state your question and be patient when waiting for staff to respond
+                            Thanks for opening a ticket ${member.effectiveName}! Please state your question and be patient when waiting for staff to respond
                         """.trimIndent()
                         )
                         interaction.respondEphemeral { content = "Ticket Opened" }
@@ -128,9 +126,7 @@ class TicketsExtension : Extension() {
                         interaction.deferEphemeralMessageUpdate()
                         val channel = (event.interaction.channel.asChannel()) as TextChannel
                         val thread = channel.startPrivateThread(
-                            "${member.displayName} Appeal",
-                            interaction.channel.asChannel().data.defaultAutoArchiveDuration.value
-                                ?: ArchiveDuration.Day
+                            "${member.effectiveName} Appeal"
                         )
                         thread.addUser(member.id)
                         thread.setup(
