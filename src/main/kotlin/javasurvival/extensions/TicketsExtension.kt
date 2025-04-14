@@ -53,14 +53,14 @@ class TicketsExtension : Extension() {
                         description = "Need help or have a question? Open a help ticket"
                     }
                     @Suppress("MaxLineLength")
-                    embed {
-                        title = "Appeals"
-                        color = DISCORD_RED
-                        description = """
-                            If you were banned from the server, muted in chat, and/or given the Time Out role,
-                            you can appeal to be pardoned, get unmuted, and/or given the Member role back by opening up an appeal ticket below.
-                        """.trimIndent()
-                    }
+//                    embed {
+//                        title = "Appeals"
+//                        color = DISCORD_RED
+//                        description = """
+//                            If you were banned from the server, muted in chat, and/or given the Time Out role,
+//                            you can appeal to be pardoned, get unmuted, and/or given the Member role back by opening up an appeal ticket below.
+//                        """.trimIndent()
+//                    }
                     actionRow {
                         interactionButton(ButtonStyle.Success, "tickets/help") {
                             emoji = DiscordPartialEmoji(name = "\uD83D\uDCE9")
@@ -68,11 +68,11 @@ class TicketsExtension : Extension() {
                             label = "Open Help Ticket"
                         }
 
-                        interactionButton(ButtonStyle.Danger, "tickets/appeal") {
-                            emoji = DiscordPartialEmoji(id = Snowflake(767793676847546478U))
-
-                            label = "Open Appeal Ticket"
-                        }
+//                        interactionButton(ButtonStyle.Danger, "tickets/appeal") {
+//                            emoji = DiscordPartialEmoji(id = Snowflake(767793676847546478U))
+//
+//                            label = "Open Appeal Ticket"
+//                        }
                         interactionButton(ButtonStyle.Secondary, "tickets/view") {
                             emoji = DiscordPartialEmoji(name = "🎫")
 
@@ -131,7 +131,7 @@ class TicketsExtension : Extension() {
                         thread.addUser(member.id)
                         thread.setup(
                             """
-                            Thanks for appealing ${member.displayName}! Please provide the following information:
+                            Thanks for appealing ${member.effectiveName}! Please provide the following information:
                             > **»** Your Minecraft and/or Discord username
                             > **»** The server(s) you were banned/muted/timed out in (i.e., the main server, the test server, and/or the Discord server)
                             > **»** Why you think you got banned/muted/put in time out (if you don't know the reason, you can always tell us that you're unsure of why)
@@ -167,7 +167,7 @@ class TicketsExtension : Extension() {
                                         action {
                                             channel.edit {
                                                 archived = true
-                                                reason = "Archived by ${user.asUser().tag}"
+                                                reason = "Archived by ${user.asUser().username}"
                                             }
                                         }
                                     }
@@ -186,7 +186,7 @@ class TicketsExtension : Extension() {
                                                 channel.edit {
                                                     archived = true
                                                     locked = true
-                                                    reason = "Archived by ${user.asUser().tag}"
+                                                    reason = "Archived by ${user.asUser().username}"
                                                 }
                                             }
                                         }

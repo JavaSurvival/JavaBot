@@ -1,6 +1,6 @@
 import ch.qos.logback.core.joran.spi.ConsoleTarget
 
-def environment = System.getenv().getOrDefault("ENVIRONMENT", "production")
+def environment = System.getenv("ENVIRONMENT") ?: "prod"
 
 def defaultLevel = INFO
 def defaultTarget = ConsoleTarget.SystemErr

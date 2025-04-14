@@ -31,7 +31,7 @@ class AutoThreadExtension : Extension() {
 
                 val thread = (event.message.channel.asChannel() as TextChannel).startPublicThreadWithMessage(
                     messageId = event.message.id,
-                    name = (event.message.author?.asMember(GUILD)?.displayName ?: "Unknown") + " Discussion"
+                    name = (event.message.author?.asMember(GUILD)?.effectiveName ?: "Unknown") + " Discussion"
                 )
                 thread.leave()
             }

@@ -28,6 +28,20 @@ repositories {
         name = "QuiltMC"
         url = uri("https://maven.quiltmc.org/repository/snapshot/")
     }
+    maven {
+        name = "KordEx (Releases)"
+        url = uri("https://repo.kordex.dev/releases")
+    }
+
+    maven {
+        name = "KordEx (Snapshots)"
+        url = uri("https://repo.kordex.dev/snapshots")
+    }
+
+    maven {
+        name = "Kord (Snapshots)"
+        url = uri("https://repo.kord.dev/snapshots/")
+    }
 }
 
 dependencies {
