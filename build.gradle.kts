@@ -7,7 +7,7 @@ plugins {
     kotlin("plugin.serialization")
 
     id("com.github.jakemarsden.git-hooks")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
     id("io.gitlab.arturbosch.detekt")
     id("com.google.devtools.ksp")
 }
@@ -71,7 +71,7 @@ dependencies {
 
 application {
     // This is deprecated, but the Shadow plugin requires it
-    mainClassName = "javasurvival.AppKt"
+    mainClass = "javasurvival.AppKt"
 }
 
 gitHooks {

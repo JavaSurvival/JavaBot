@@ -1,4 +1,5 @@
 import ch.qos.logback.core.joran.spi.ConsoleTarget
+statusListener(OnConsoleStatusListener)
 
 def environment = System.getenv("ENVIRONMENT") ?: "prod"
 
