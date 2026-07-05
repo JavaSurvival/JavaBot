@@ -10,11 +10,13 @@ logging = "2.1.23"
 logback = "1.5.13"
 groovy = "3.0.14"
 jansi = "2.4.0"
+janino = "3.1.12"
 
 [libraries]
 detekt = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
 groovy = { module = "org.codehaus.groovy:groovy", version.ref = "groovy" }
 jansi = { module = "org.fusesource.jansi:jansi", version.ref = "jansi" }
+janino = { module = "org.codehaus.janino:janino", version.ref = "janino" }
 kordex-annotations = { module = "com.kotlindiscord.kord.extensions:annotations", version.ref = "kordex" }
 kordex-annotationProcessor = { module = "com.kotlindiscord.kord.extensions:annotation-processor", version.ref = "kordex" }
 kordex-core = { module = "com.kotlindiscord.kord.extensions:kord-extensions", version.ref = "kordex" }

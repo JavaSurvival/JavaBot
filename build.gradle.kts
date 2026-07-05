@@ -56,9 +56,9 @@ dependencies {
     implementation(libs.kord.core)
 
     implementation(libs.jansi)
+    implementation(libs.janino)
     implementation(libs.logback)
     implementation(libs.logging)
-    implementation(libs.groovy)
 
     implementation(platform(libs.kotlin.bom))
     implementation(libs.kotlin.stdlib)

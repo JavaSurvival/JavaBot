@@ -1,0 +1,35 @@
+<configuration>
+    <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
+
+    <property name="ENVIRONMENT" value="${ENVIRONMENT:-prod}"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.out</target>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%boldGreen(%d{yyyy-MM-dd}) %boldYellow(%d{HH:mm:ss}) %gray(|) %highlight(%5level) %gray(|) %boldMagenta(%40.40logger{40}) %gray(|) %msg%n</pattern>
+            <withJansi>true</withJansi>
+        </encoder>
+    </appender>
+
+    <appender name="STDERR" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%boldGreen(%d{yyyy-MM-dd}) %boldYellow(%d{HH:mm:ss}) %gray(|) %highlight(%5level) %gray(|) %boldMagenta(%40.40logger{40}) %gray(|) %msg%n</pattern>
+            <withJansi>true</withJansi>
+        </encoder>
+    </appender>
+
+    <if condition='property("ENVIRONMENT").equals("dev")'>
+        <then>
+            <logger name="io.ktor.util.random" level="ERROR"/>
+            <root level="DEBUG">
+                <appender-ref ref="STDOUT"/>
+            </root>
+        </then>
+        <else>
+            <root level="INFO">
+                <appender-ref ref="STDERR"/>
+            </root>
+        </else>
+    </if>
+</configuration>
