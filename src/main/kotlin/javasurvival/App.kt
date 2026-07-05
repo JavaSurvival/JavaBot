@@ -29,6 +29,7 @@ suspend fun main() {
             add(::SuggestionsExtension)
             add(::AutoThreadExtension)
             add(::TicketsExtension)
+            add(::HoneypotExtension)
         }
 
         hooks {

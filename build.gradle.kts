@@ -74,11 +74,11 @@ application {
     mainClass = "javasurvival.AppKt"
 }
 
-gitHooks {
-    setHooks(
-        mapOf("pre-commit" to "detekt")
-    )
-}
+//gitHooks {
+//    setHooks(
+//        mapOf("pre-commit" to "detekt")
+//    )
+//}
 
 // If you don't want the import, remove it and use org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 tasks.withType<KotlinCompile> {

@@ -16,6 +16,7 @@ internal val LOGS_CHANNEL = Snowflake(env("LOGS_CHANNEL").toULong())
 internal val SUGGESTIONS_CHANNEL = Snowflake(env("SUGGESTIONS_CHANNEL").toULong())
 internal val SCREENSHOT_CHANNELS = env("SCREENSHOT_CHANNELS").split(",").map { Snowflake(it.toULong()) }
 internal val ISSUES_CHANNEL = Snowflake(env("ISSUES_CHANNEL").toULong())
+internal val HONEYPOT_CHANNEL = Snowflake(env("HONEYPOT_CHANNEL").toULong())
 
 internal val EVENT_EMOJI = Emojis[env("EVENT_EMOJI")]!!
 internal val ANNOUNCEMENT_EMOJI = Emojis[env("ANNOUNCEMENT_EMOJI")]!!
