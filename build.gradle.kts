@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
 
-    id("com.github.jakemarsden.git-hooks")
+//    id("com.github.jakemarsden.git-hooks")
     id("com.gradleup.shadow")
     id("io.gitlab.arturbosch.detekt")
     id("com.google.devtools.ksp")
