@@ -6,6 +6,7 @@ package javasurvival
 import com.kotlindiscord.kord.extensions.ExtensibleBot
 import com.kotlindiscord.kord.extensions.utils.loadModule
 import javasurvival.extensions.*
+import javasurvival.extensions.mute.MuteEnforcementExtension
 import javasurvival.extensions.suggestions.JsonSuggestions
 import javasurvival.extensions.suggestions.SuggestionsData
 import javasurvival.extensions.suggestions.SuggestionsExtension
@@ -30,6 +31,7 @@ suspend fun main() {
             add(::AutoThreadExtension)
             add(::TicketsExtension)
             add(::HoneypotExtension)
+            add(::MuteEnforcementExtension)
         }
 
         hooks {
